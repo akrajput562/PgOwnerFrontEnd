@@ -1,5 +1,4 @@
 import React, {useState} from "react";
-import { Formik } from "formik";
 import { ActivityIndicator } from "react-native";
 import { colors } from "../components/colors";
 const { primary, secondary, lightGray } = colors;
@@ -8,25 +7,17 @@ const { primary, secondary, lightGray } = colors;
 import MainContainer from "../components/Containers/MainContainer";
 import KeyboardAvoidingContainer from "../components/Containers/KeyboardAvoidingContainer";
 import RegularText from "../components/Texts/RegularText";
-import StyledTextInput from "../components/Inputs/StyledTextInput";
-import MsgBox from "../components/Texts/MsgBox";
 import RegularButton from "../components/Buttons/RegularButton";
-import PressableText from "../components/Texts/PressableText";
-import RowContainer from "../components/Containers/RowContainer";
 import IconHeader from "../components/Icons/IconHeader";
 import StyledCodeInput from "../components/Inputs/StyledCodeInput";
 import ResendTimer from "../components/Timers/ResendTimer";
+import MessageModal from "../components/Modals/MessageModal";
 
-const EmailVerification = () =>{
+const EmailVerification = ({navigation}) =>{
     //code input
     const MAX_CODE_LENGTH = 4;
     const [code, setCode] = useState('');
     const [pinReady, setPinReady] = useState('');
-
-
-    const [message, setMessage] = useState('');
-    const [isSuccessMessage, setIsSuccessMessage] = useState(false);
-
     const [verifying, setVerifying] = useState(false);
 
     // resending email
@@ -34,7 +25,36 @@ const EmailVerification = () =>{
     const [resendStatus, setResendStatus] = useState('Resend');
     const [resendingEmail, setResendingEmail] = useState(false);
 
-    const resendEmail = async () => {
+    //MOdal
+    
+    const [modalVisible, setModalVisible] = useState(false);
+    const [ modalMessageType, setModalMessageType] = useState('');
+    const [headerText, setHeaderText] = useState('');
+    const [ModalMessage, setModalMessage] = useState('');
+    const [buttonText, setButtonText] = useState('');
+
+    const moveTo = (screen, payload) => {
+        navigation.navigate(screen, { ...payload});
+    };
+
+    const buttonHandler = () => {
+        if (modalMessageType == 'success') {
+            // do something
+            moveTo("Dashboard");
+        }
+
+        setModalVisible(false);
+    };
+
+    const showModal = (type, headerText, message, buttonText) => {
+        setModalMessageType(type);
+        setHeaderText(headerText);
+        setModalMessage(message);
+        setButtonText(buttonText);
+        setModalVisible(true);
+    }
+
+    const resendEmail = async (triggerTimer) => {
         try {
             setResendingEmail(true);
 
@@ -54,24 +74,23 @@ const EmailVerification = () =>{
             setResendingEmail(false);
             setResendStatus('Failed!');
             alert('Email Resend Failed: ' + error.message);
-
         }
+    };
 
-    }
 
-
-    const handleEmailVerification = async (credentials, setSubmitting) => {
+    const handleEmailVerification = async () => {
         try {
-            setMessage(null);
+
+            
+            setVerifying(true);
 
             // call backend
 
-            // move to next page
-
-          setSubmitting(false);
+            setVerifying(false);
+            return showModal('success', 'All Good!', 'Your email has been verified.','Proceed' );           
         }catch (error) {
-            setMessage('Login failed: ' + error.message);
-            setSubmitting(false);
+            setVerifying(false);
+            return showModal('failed', 'failed', 'error.message','Close' );
         }
     };
 
@@ -107,7 +126,15 @@ const EmailVerification = () =>{
                         resendEmail={resendEmail}
                         
                         />
-
+                         
+                        <MessageModal 
+                        modalVisible={modalVisible} 
+                        buttonHandler={buttonHandler} 
+                        type={modalMessageType} 
+                        headerText={headerText} 
+                        message={ModalMessage}
+                        buttonText={buttonText}
+                        />
         </KeyboardAvoidingContainer>
     </MainContainer>
     );

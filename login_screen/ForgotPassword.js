@@ -11,10 +11,9 @@ import RegularText from "../components/Texts/RegularText";
 import StyledTextInput from "../components/Inputs/StyledTextInput";
 import MsgBox from "../components/Texts/MsgBox";
 import RegularButton from "../components/Buttons/RegularButton";
-import PressableText from "../components/Texts/PressableText";
-import RowContainer from "../components/Containers/RowContainer";
+import IconHeader from "../components/Icons/IconHeader";
 
-const Login = ({navigation}) =>{
+const ForgotPassword = ({navigation}) =>{
     const [message, setMessage] = useState('');
     const [isSuccessMessage, setIsSuccessMessage] = useState(false);
 
@@ -22,18 +21,19 @@ const Login = ({navigation}) =>{
         navigation.navigate(screen, { ...payload});
     };
 
-    const handleLogin = async (credentials, setSubmitting) => {
+
+    const handleOnSubmit = async (credentials, setSubmitting) => {
         try {
             setMessage(null);
 
             // call backend
 
             // move to next page
-            moveTo('Dashboard');
+            moveTo('ResetPassword');
 
           setSubmitting(false);
         }catch (error) {
-            setMessage('Login failed: ' + error.message);
+            setMessage('Request failed: ' + error.message);
             setSubmitting(false);
         }
     };
@@ -42,16 +42,17 @@ const Login = ({navigation}) =>{
     return (
     <MainContainer>
         <KeyboardAvoidingContainer>
-            <RegularText style={{marginBottom: 25}}>Enter your account credentials</RegularText>
+            <IconHeader name="key" style={{marginBottom: 30}} />
+            <RegularText style={{marginBottom: 25}}>Provide the detail below to begin the process</RegularText>
 
             <Formik 
-            initialValues={{email: '', password: '' }}
+            initialValues={{email: '',   }}
             onSubmit={(values, {setSubmitting}) => {
-                if (values.email == "" || values.password == ""){
+                if (values.email == "" ){
                     setMessage('Please fill in all fields');
                     setSubmitting(false);
                 } else{
-                    handleLogin(values, setSubmitting);
+                    handleOnSubmit(values, setSubmitting);
                 }
             }}
             >
@@ -68,32 +69,17 @@ const Login = ({navigation}) =>{
                         style={{ marginBottom: 25}}
                         />
 
-                        <StyledTextInput 
-                        label="Password" 
-                        icon="lock-open" 
-                        placeholder="* * * * * *" 
-                        onChangeText={handleChange('password')}
-                        onBlur={handleBlur('password')}
-                        value={values.password}
-                        isPassword={true}
-                        style={{ marginBottom: 25}}
-                        />
-
-                        <MsgBox style={{ marginBottom: 25}} success={isSuccessMessage}>
+                        <MsgBox style={{ marginBottom: 40}} success={isSuccessMessage}>
                             { message || " "}
                             </MsgBox>
-                        {!isSubmitting && <RegularButton onPress={handleSubmit}>Login</RegularButton>}
+                        {!isSubmitting && 
+                        <RegularButton onPress={handleSubmit}>Submit</RegularButton>}
                         {isSubmitting && (
                         <RegularButton disabled={true}>
                           <ActivityIndicator size="small" color={primary} /> 
                         </RegularButton>
                         )}
-                        <RowContainer>
-                        <PressableText onPress={() =>{moveTo('Signup')}}>New account sign up</PressableText>
-                        <PressableText onPress={() =>{moveTo('ForgotPassword')}}>Forgot Passoword</PressableText>
-                        </RowContainer>
-                        
-                        
+                   
                     </>
                 )}
             </Formik>   
@@ -102,4 +88,4 @@ const Login = ({navigation}) =>{
     );
 };
 
-export default Login;
+export default ForgotPassword;

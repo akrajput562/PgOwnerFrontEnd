@@ -13,9 +13,13 @@ import MsgBox from "../components/Texts/MsgBox";
 import RegularButton from "../components/Buttons/RegularButton";
 import PressableText from "../components/Texts/PressableText";
  
-const Signup = () =>{
+const Signup = ({navigation}) =>{
     const [message, setMessage] = useState('');
     const [isSuccessMessage, setIsSuccessMessage] = useState(false);
+
+    const moveTo = (screen, payload) => {
+        navigation.navigate(screen, { ...payload});
+    };
 
     const handleSignup = async (credentials, setSubmitting) => {
         try {
@@ -24,7 +28,7 @@ const Signup = () =>{
             // call backend
 
             // move to next page
-
+                moveTo('EmailVerification');
           setSubmitting(false);
         }catch (error) {
             setMessage('Signup failed: ' + error.message);
@@ -75,7 +79,7 @@ const Signup = () =>{
                         />
 
                         <StyledTextInput 
-                        label="Passoword" 
+                        label="Password" 
                         icon="lock-open" 
                         placeholder="* * * * * *" 
                         onChangeText={handleChange('password')}
@@ -85,7 +89,7 @@ const Signup = () =>{
                         style={{ marginBottom: 25}}
                         />
                           <StyledTextInput 
-                        label="Confirm Passoword" 
+                        label="Confirm Password" 
                         icon="lock-open" 
                         placeholder="* * * * * *" 
                         onChangeText={handleChange('confirmPassword')}
@@ -105,7 +109,7 @@ const Signup = () =>{
                         </RegularButton>
                         )}
                         
-                        <PressableText style={{paddingVertical: 15}} onPress={() =>{}}>Sign In Page</PressableText>
+                        <PressableText style={{paddingVertical: 15}} onPress={() =>{moveTo('Login')}}>Sign In to an existing account</PressableText>
                          
                                                  
                     </>

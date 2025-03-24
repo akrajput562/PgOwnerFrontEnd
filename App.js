@@ -1,11 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import EmailVerification from './login_screen/EmailVerification' 
+import RootStack from './navigators/RootStack';
 
 export default function App() {
   return (
     < >
-      <StatusBar style="auto" />
-      <EmailVerification />
+      <StatusBar style="light" />
+      <RootStack />
     </>
   );
 }
