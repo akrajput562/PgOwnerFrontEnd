@@ -5,7 +5,7 @@ import { colors } from "../components/colors";
 const { primary } = colors;
 
 //custom component 
-import MainContainer from "../components/Containers/MainContainer";
+import MainContainer from '../components/Containers/MainContainer';
 import KeyboardAvoidingContainer from "../components/Containers/KeyboardAvoidingContainer";
 import RegularText from "../components/Texts/RegularText";
 import StyledTextInput from "../components/Inputs/StyledTextInput";
