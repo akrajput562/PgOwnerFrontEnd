@@ -90,7 +90,7 @@ const Login = ({navigation}) =>{
                         )}
                         <RowContainer>
                         <PressableText onPress={() =>{moveTo('Signup')}}>New account sign up</PressableText>
-                        <PressableText onPress={() =>{moveTo('ForgotPassword')}}>Forgot Passoword</PressableText>
+                        <PressableText onPress={() =>{moveTo('ForgotPassword')}}>Forgot Password</PressableText>
                         </RowContainer>
                         
                         
