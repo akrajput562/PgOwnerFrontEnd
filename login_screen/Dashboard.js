@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'; 
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -14,6 +13,7 @@ const Dashboard = ({ navigation }) => {
       <View style={styles.header}>
         <TouchableOpacity>
           <Ionicons name="home" size={24} color="white" />
+        </TouchableOpacity>
         <TouchableOpacity>  
         <Entypo name="user" size={30} color="black" style={styles.profileIcon} /> 
         </TouchableOpacity>
@@ -33,7 +33,7 @@ const Dashboard = ({ navigation }) => {
       <SearchBarSection />
 
       {/* Metrics Grid */}
-      <ScrollView style={styles.metricsContainer}>
+      <ScrollView style={styles.metricsContainer} contentContainerStyle={{paddingBottom: 100}}>
         <View style={styles.metricsGrid}>
           <MetricCard title="Properties" value="5" />
           <MetricCard title="Total Rooms" value="120" />
@@ -57,38 +57,35 @@ const Dashboard = ({ navigation }) => {
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <NavItem icon="🏠" label="Dashboard" />
-        <NavItem icon="🏢" label="Manage PG" />
-        <NavItem icon="🛏️" label="Rooms" />
-        <NavItem icon="🎫" label="Reports" />
+        
+        <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '100%'}}>
+          <NavItem 
+            icon={<MaterialCommunityIcons name="view-dashboard" size={30} color="black" />} 
+            label="Dashboard" 
+            onPress={() => navigation.navigate("Dashboard")} 
+          />
+          <NavItem 
+            icon={<FontAwesome6 name="building-user" size={30} color="black" />} 
+            label="Manage PG" 
+            onPress={() => navigation.navigate("PgRegistration")} 
+          />
+          <NavItem 
+            icon={<FontAwesome name="bed" size={30} color="black" />} 
+            label="Rooms" 
+            onPress={() => navigation.navigate("Rooms")} 
+          />
+          <NavItem 
+            icon={<FontAwesome6 name="ticket" size={30} color="black" />} 
+            label="Tickets" 
+            onPress={() => navigation.navigate("Tickets")} 
+          />
+          <NavItem 
+            icon={<MaterialCommunityIcons name="home-account" size={30} color="black" />} 
+            label="Tenants" 
+            onPress={() => navigation.navigate("AddTenant")} 
+          />
+        </View>
       </View>
-
-  <NavItem 
-    icon={<MaterialCommunityIcons name="view-dashboard" size={30} color="black" />} 
-    label="Dashboard" 
-    onPress={() => navigation.navigate("Dashboard")} 
-  />
-  <NavItem 
-    icon={<FontAwesome6 name="building-user" size={30} color="black" />} 
-    label="Manage PG" 
-    onPress={() => navigation.navigate("PgRegistration")} 
-  />
-  <NavItem 
-    icon={<FontAwesome name="bed" size={30} color="black" />} 
-    label="Rooms" 
-    onPress={() => navigation.navigate("Rooms")} 
-  />
-  <NavItem 
-    icon={<FontAwesome6 name="ticket" size={30} color="black" />} 
-    label="Tickets" 
-    onPress={() => navigation.navigate("Tickets")} 
-  />
-  <NavItem 
-    icon={<MaterialCommunityIcons name="home-account" size={30} color="black" />} 
-    label="Tenants" 
-    onPress={() => navigation.navigate("AddTenant")} 
-  />
-</View>
 
     </View>
   );
@@ -258,30 +255,38 @@ const styles = StyleSheet.create({
     color: '#666666',
   },
   registerButton: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 20,
-    alignItems: 'center',
+    backgroundColor: '#2196F3',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginVertical: 20,
+    alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   registerButtonText: {
-    color: '#ffffff',
+    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
   bottomNav: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 15,
-    backgroundColor: '#ffffff',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    alignItems: 'center', 
+    borderTopColor: '#eee',
   },
   navItem: {
-    flex: 1,
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingHorizontal: 10,
   },
   navIcon: {
     fontSize: 30,
