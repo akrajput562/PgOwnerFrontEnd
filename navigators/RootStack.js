@@ -15,6 +15,7 @@ import Dashboard from "../login_screen/Dashboard";
 import PgRegistration from '../login_screen/PgRegistration';
 import PropertyNavigation from '../pgregistration/PropertyNavigation';
 import SuccessMessage from '../login_screen/PgRegistration';
+import AddTenant from '../tenants/Addtenant';
 
 const Stack = createStackNavigator();
 
@@ -76,6 +77,7 @@ const RootStack = ( ) => {
             />
             <Stack.Screen name="SuccessMessage" component={SuccessMessage} options={{headerShown: false}}/>
             <Stack.Screen name="Property" component={PropertyNavigation} options={{headerShown: false}}/>
+            <Stack.Screen name="AddTenant" component={AddTenant} options={{ title: 'Add Tenant' }} />
         </Stack.Navigator>
     </NavigationContainer>
     );

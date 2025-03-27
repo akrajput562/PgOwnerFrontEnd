@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'; 
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Entypo from '@expo/vector-icons/Entypo';
 
 const Dashboard = ({ navigation }) => {
   const [floors, setFloors] = useState([]);
@@ -26,12 +30,12 @@ const Dashboard = ({ navigation }) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity>
-          <Text style={styles.profileIcon}>👤</Text>
+        <TouchableOpacity>  
+        <Entypo name="user" size={30} color="black" style={styles.profileIcon} /> 
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Dashboard</Text>
         <TouchableOpacity>
-          <Text style={styles.notificationIcon}>🔔</Text>
+        <MaterialCommunityIcons name="bell-ring" size={30} color="black" style={styles.profileIcon}/>
         </TouchableOpacity>
       </View>
 
@@ -91,11 +95,33 @@ const Dashboard = ({ navigation }) => {
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <NavItem icon="🏠" label="Dashboard" />
-        <NavItem icon="🏢" label="Manage PG" />
-        <NavItem icon="🛏️" label="Rooms" />
-        <NavItem icon="🎫" label="Tickets" />
-      </View>
+  <NavItem 
+    icon={<MaterialCommunityIcons name="view-dashboard" size={30} color="black" />} 
+    label="Dashboard" 
+    onPress={() => navigation.navigate("Dashboard")} 
+  />
+  <NavItem 
+    icon={<FontAwesome6 name="building-user" size={30} color="black" />} 
+    label="Manage PG" 
+    onPress={() => navigation.navigate("PgRegistration")} 
+  />
+  <NavItem 
+    icon={<FontAwesome name="bed" size={30} color="black" />} 
+    label="Rooms" 
+    onPress={() => navigation.navigate("Rooms")} 
+  />
+  <NavItem 
+    icon={<FontAwesome6 name="ticket" size={30} color="black" />} 
+    label="Tickets" 
+    onPress={() => navigation.navigate("Tickets")} 
+  />
+  <NavItem 
+    icon={<MaterialCommunityIcons name="home-account" size={30} color="black" />} 
+    label="Tenants" 
+    onPress={() => navigation.navigate("AddTenant")} 
+  />
+</View>
+
     </View>
   );
 };
@@ -107,8 +133,8 @@ const MetricCard = ({ title, value }) => (
   </View>
 );
 
-const NavItem = ({ icon, label }) => (
-  <TouchableOpacity style={styles.navItem}>
+const NavItem = ({ icon, label, onPress }) => (
+  <TouchableOpacity style={styles.navItem} onPress={onPress}>
     <Text style={styles.navIcon}>{icon}</Text>
     <Text style={styles.navLabel}>{label}</Text>
   </TouchableOpacity>
@@ -185,17 +211,20 @@ const styles = StyleSheet.create({
   },
   bottomNav: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 15,
+    justifyContent: 'space-between',
+    paddingVertical: 15,
     backgroundColor: '#ffffff',
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
+    alignItems: 'center', 
   },
   navItem: {
+    flex: 1,
     alignItems: 'center',
+    paddingVertical: 10,
   },
   navIcon: {
-    fontSize: 24,
+    fontSize: 30,
   },
   navLabel: {
     fontSize: 12,
