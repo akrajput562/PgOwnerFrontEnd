@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // Define backend base URL
-const API_BASE_URL = 'http://localhost:8080/pg/api';
-
+const API_BASE_URL = 'http://localhost:8080/pg';
+//const API_BASE_URL='http://192.168.29.155:8080/pg'
 export const apiClient = async (
     endpoint: string,
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
@@ -24,10 +24,10 @@ export const apiClient = async (
         if (body) {
             if (body instanceof FormData) {
                 options.data = body;
-                // Axios will automatically set the correct 'Content-Type' for FormData
+                options.headers['Content-Type'] = 'multipart/form-data'; // ✅ FormData case
             } else {
                 options.data = JSON.stringify(body);
-                options.headers['Content-Type'] = 'application/json';
+                options.headers['Content-Type'] = 'application/json'; // ✅ JSON case
             }
         }
 

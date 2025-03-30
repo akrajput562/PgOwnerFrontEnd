@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Formik } from "formik";
 import { ActivityIndicator } from "react-native";
 import { colors } from "../components/colors";
@@ -18,7 +18,7 @@ import apiClient from "../api/auth";
 const Signup = ({ navigation }) => {
     const [message, setMessage] = useState('');
     const [isSuccessMessage, setIsSuccessMessage] = useState(false);
-
+    const [user, setUser] = useState(null); // Store user data
     const moveTo = (screen, payload) => {
         navigation.navigate(screen, { ...payload });
     };
@@ -38,8 +38,7 @@ const Signup = ({ navigation }) => {
     
             console.log('Signup successful:', data);
     
-            // Move to Email Verification page
-            moveTo('EmailVerification');
+            setUser(credentials);
     
         } catch (error) {
             setMessage('Signup failed: ' + (error.message || 'Please try again.'));
@@ -47,7 +46,11 @@ const Signup = ({ navigation }) => {
             setSubmitting(false);
         }
     };
-
+    useEffect(() => {
+        if (user) {
+            navigation.navigate('EmailVerification', { user });
+        }
+    }, [user]); 
     return (
         <MainContainer>
             <KeyboardAvoidingContainer>

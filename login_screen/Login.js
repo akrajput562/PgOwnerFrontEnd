@@ -13,7 +13,7 @@ import MsgBox from "../components/Texts/MsgBox";
 import RegularButton from "../components/Buttons/RegularButton";
 import PressableText from "../components/Texts/PressableText";
 import RowContainer from "../components/Containers/RowContainer";
-
+import apiClient from "../api/auth";
 const Login = ({navigation}) =>{
     const [message, setMessage] = useState('');
     const [isSuccessMessage, setIsSuccessMessage] = useState(false);
@@ -25,13 +25,18 @@ const Login = ({navigation}) =>{
     const handleLogin = async (credentials, setSubmitting) => {
         try {
             setMessage(null);
-
-            // call backend
-
-            // move to next page
+            const formData = new FormData();
+            Object.keys(credentials).forEach(key => {
+                formData.append(key, credentials[key]);
+            });
+    
+            // Call backend API
+            const data = await apiClient('/user/login', 'POST', formData);
             moveTo('Dashboard');
-
-          setSubmitting(false);
+            console.log('Singin successful:', data);
+    
+           
+          setSubmitting(true);
         }catch (error) {
             setMessage('Login failed: ' + error.message);
             setSubmitting(false);
@@ -45,9 +50,9 @@ const Login = ({navigation}) =>{
             <RegularText style={{marginBottom: 25}}>Enter your account credentials</RegularText>
 
             <Formik 
-            initialValues={{email: '', password: '' }}
+            initialValues={{username: '', password: '' }}
             onSubmit={(values, {setSubmitting}) => {
-                if (values.email == "" || values.password == ""){
+                if (values.username == "" || values.password == ""){
                     setMessage('Please fill in all fields');
                     setSubmitting(false);
                 } else{
@@ -62,9 +67,9 @@ const Login = ({navigation}) =>{
                         icon="email-variant" 
                         placeholder="walt@gmail.com" 
                         keyboardType="email-address" 
-                        onChangeText={handleChange('email')}
-                        onBlur={handleBlur('email')}
-                        value={values.email}
+                        onChangeText={handleChange('username')}
+                        onBlur={handleBlur('username')}
+                        value={values.username}
                         style={{ marginBottom: 25}}
                         />
 
