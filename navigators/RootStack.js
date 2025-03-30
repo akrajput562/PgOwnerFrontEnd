@@ -18,6 +18,7 @@ import SuccessMessage from '../login_screen/PgRegistration';
 import AddTenant from '../tenants/Addtenant';
 import Rooms from '../screens/Rooms';
 import RoomDetails from '../screens/RoomDetails';
+import PgListScreen from '../pgregistration/PgListScreen';  // New screen added
 
 const Stack = createStackNavigator();
 
@@ -112,6 +113,8 @@ const RootStack = () => {
                         }
                     }}
                 />
+                {/* New PgListScreen added to navigation */}
+                <Stack.Screen name="PgListScreen" component={PgListScreen} options={{ title: 'PG List' }} />
             </Stack.Navigator>
         </NavigationContainer>
     );
