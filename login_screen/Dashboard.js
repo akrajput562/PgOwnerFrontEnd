@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'; 
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import Entypo from '@expo/vector-icons/Entypo';
 
 const Dashboard = ({ navigation }) => {
   return (
@@ -14,21 +13,16 @@ const Dashboard = ({ navigation }) => {
         <TouchableOpacity>
           <Ionicons name="home" size={24} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity>  
-        <Entypo name="user" size={30} color="black" style={styles.profileIcon} /> 
-        </TouchableOpacity>
+
         <Text style={styles.headerTitle}>Dashboard</Text>
-        <TouchableOpacity>
-        <MaterialCommunityIcons name="bell-ring" size={30} color="black" style={styles.profileIcon}/>
-        </TouchableOpacity>
+
         <View style={styles.userInfo}>
           <Text style={styles.userName}>John Doe</Text>
           <Ionicons name="chevron-down" size={16} color="white" />
         </View>
         
       </View>
-      {/* Navigation Tabs */}
-      <NavigationTabs />
+       
       {/* Search Bar */}
       <SearchBarSection />
 
@@ -40,19 +34,11 @@ const Dashboard = ({ navigation }) => {
           <MetricCard title="Total Beds" value="240" />
           <MetricCard title="Occupancy" value="75" />
           <MetricCard title="Vacant Beds" value="10" />
-          <MetricCard title="Notice Period" value="30 days" />
-          <MetricCard title="Pending Amount" value="R.S.50000" />
-          <MetricCard title="Recived  Amount" value="R.S.80000" />
-
-
-          {/* Property Status Card */}
-          <PropertyStatusCard />
+          <TouchableOpacity style={[styles.metricCard, styles.metricCardRegister]} onPress={() => navigation.navigate('PgRegistration')}>
+            <Text style={styles.registerButtonText}>Register New PG</Text>
+          </TouchableOpacity>
+           
         </View>
-
-        {/* PG Registration Button */}
-        <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('PgRegistration')}>
-          <Text style={styles.registerButtonText}>Register New PG</Text>
-        </TouchableOpacity>
       </ScrollView>
 
       {/* Bottom Navigation */}
@@ -67,7 +53,7 @@ const Dashboard = ({ navigation }) => {
           <NavItem 
             icon={<FontAwesome6 name="building-user" size={30} color="black" />} 
             label="Manage PG" 
-            onPress={() => navigation.navigate("PgRegistration")} 
+            onPress={() => navigation.navigate("PgListScreen")} 
           />
           <NavItem 
             icon={<FontAwesome name="bed" size={30} color="black" />} 
@@ -114,52 +100,11 @@ const SearchBarSection = () => (
         placeholder="Search Properties"
         placeholderTextColor="#666666"
       />
-    </View>
-    <View style={styles.filterButtons}>
-      {['Rooms', 'Tenants', 'Beds'].map((filter) => (
-        <TouchableOpacity key={filter} style={styles.filterButton}>
-          <Text style={styles.filterText}>{filter}</Text>
-          <View style={[styles.statusIndicator, {backgroundColor: '#4CAF50'}]} />
-        </TouchableOpacity>
-      ))}
-    </View>
+    </View> 
   </View>
 );
 
 const PropertyStatusCard = () => {
-  const statusItems = [
-    {label: 'Filled Beds', icon: 'checkmark-circle', color: '#4CAF50', count: 12},
-    {label: 'Vacant Beds', icon: 'close-circle', color: '#F44336', count: 3},
-    {label: 'Under Notice', icon: 'alert-circle', color: '#FF9800', count: 2},
-    {label: 'Tenants', icon: 'people', color: '#2196F3', count: 15},
-    {label: 'Collection', icon: 'cash', color: '#4CAF50', count: '₹1,20,000'},
-    {label: 'Leads', icon: 'megaphone', color: '#E91E63', count: 5},
-    {label: 'Bookings', icon: 'calendar', color: '#FFC107', count: 3},
-  ];
-
-  return (
-    <View style={styles.statusCard}>
-      <View style={styles.cardHeader}>
-        <Text style={styles.ownerName}>John Doe</Text>
-        <View style={styles.statusBadge}>
-          <Text style={styles.statusBadgeText}>Current</Text>
-        </View>
-      </View>
-      <Text style={styles.roomInfo}>3 Rooms | 15 Beds</Text>
-      <View style={styles.statusList}>
-        {statusItems.map((item) => (
-          <View key={item.label} style={styles.statusItem}>
-            <Ionicons name={item.icon} size={20} color={item.color} />
-            <Text style={styles.statusLabel}>{item.label}</Text>
-            <Text style={styles.statusCount}>{item.count}</Text>
-          </View>
-        ))}
-      </View>
-      <TouchableOpacity style={styles.viewMoreButton}>
-        <Text style={styles.viewMoreText}>View More</Text>
-      </TouchableOpacity>
-    </View>
-  );
 };
 
 const NavigationTabs = () => {
@@ -221,17 +166,14 @@ const styles = StyleSheet.create({
   time: {
     color: 'white',
   },
-  metricsContainer: {
-    flex: 1,
-    padding: 20,
-  },
   metricsGrid: {
     flexDirection: 'row',
+    
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
   metricCard: {
-    width: '48%',
+    width: '30%',
     backgroundColor: '#ffffff',
     padding: 20,
     borderRadius: 10,
@@ -241,16 +183,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    alignItems: 'center',
+  },
+  metricCardRegister: {
+    backgroundColor: 'black',
+    
   },
   metricValue: {
-    fontSize: 24,
+    fontSize: 15,
     fontWeight: 'bold',
     marginBottom: 5,
     textAlign: 'center',
     color: '#333333',
   },
   metricTitle: {
-    fontSize: 16,
+    fontSize: 10,
     textAlign: 'center',
     color: '#666666',
   },
