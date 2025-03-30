@@ -1,9 +1,9 @@
-import React, {useState} from "react";
+import React, { useState, useEffect } from "react";
 import { ActivityIndicator } from "react-native";
 import { colors } from "../components/colors";
 const { primary, secondary, lightGray } = colors;
 
-//custom component 
+// Custom components
 import MainContainer from "../components/Containers/MainContainer";
 import KeyboardAvoidingContainer from "../components/Containers/KeyboardAvoidingContainer";
 import RegularText from "../components/Texts/RegularText";
@@ -12,131 +12,137 @@ import IconHeader from "../components/Icons/IconHeader";
 import StyledCodeInput from "../components/Inputs/StyledCodeInput";
 import ResendTimer from "../components/Timers/ResendTimer";
 import MessageModal from "../components/Modals/MessageModal";
+import apiClient from "../api/auth";
+const EmailVerification = ({ navigation, route }) => {
+    // ✅ Get user from navigation params
+    const { user } = route.params || {}; 
 
-const EmailVerification = ({navigation}) =>{
-    //code input
+    // OTP input
     const MAX_CODE_LENGTH = 4;
     const [code, setCode] = useState('');
-    const [pinReady, setPinReady] = useState('');
+    const [pinReady, setPinReady] = useState(false);
     const [verifying, setVerifying] = useState(false);
 
-    // resending email
+    // Resending OTP
     const [activeResend, setActiveResend] = useState(false);
     const [resendStatus, setResendStatus] = useState('Resend');
     const [resendingEmail, setResendingEmail] = useState(false);
 
-    //MOdal
-    
+    // Modal state
     const [modalVisible, setModalVisible] = useState(false);
-    const [ modalMessageType, setModalMessageType] = useState('');
+    const [modalMessageType, setModalMessageType] = useState('');
     const [headerText, setHeaderText] = useState('');
     const [ModalMessage, setModalMessage] = useState('');
     const [buttonText, setButtonText] = useState('');
 
     const moveTo = (screen, payload) => {
-        navigation.navigate(screen, { ...payload});
+        navigation.navigate(screen, { ...payload });
     };
 
     const buttonHandler = () => {
-        if (modalMessageType == 'success') {
-            // do something
+        if (modalMessageType === 'success') {
             moveTo("Dashboard");
         }
-
         setModalVisible(false);
     };
 
-    const showModal = (type, headerText, message, buttonText) => {
+    const showModal = (type, header, message, button) => {
         setModalMessageType(type);
-        setHeaderText(headerText);
+        setHeaderText(header);
         setModalMessage(message);
-        setButtonText(buttonText);
+        setButtonText(button);
         setModalVisible(true);
-    }
+    };
 
     const resendEmail = async (triggerTimer) => {
         try {
             setResendingEmail(true);
-
-            // make request to backend
-
-            //setResendStatus() to failed or sent
-
+            // TODO: Call your API to resend OTP here
+            
+            setResendStatus('Sent');
             setResendingEmail(false);
 
-            // hold on briefly
-            setTimeout(()=> {
+            // Trigger the resend timer
+            setTimeout(() => {
                 setResendStatus('Resend');
                 setActiveResend(false);
                 triggerTimer();
             }, 5000);
-        }catch (error) {
+        } catch (error) {
             setResendingEmail(false);
             setResendStatus('Failed!');
             alert('Email Resend Failed: ' + error.message);
         }
     };
 
-
     const handleEmailVerification = async () => {
         try {
-
-            
             setVerifying(true);
+            const formData = new FormData();
+            Object.keys(user).forEach(key => {
+                formData.append(key, user[key]); // Add user details
+            });
+            formData.append("otp", code); // Add OTP separately
+console.log(formData)
+            // Send request
+            const data = await apiClient('/pg/verifyOtp', 'POST', formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
 
-            // call backend
-
+            if (data.success) {
+                setVerifying(true);
+                return showModal('success', 'All Good!', 'Your email has been verified.', 'Proceed');
+            } else {
+                setVerifying(false);
+                return showModal('failed', 'Verification Failed', data.message || 'Invalid code', 'Close');
+            }
+        } catch (error) {
             setVerifying(false);
-            return showModal('success', 'All Good!', 'Your email has been verified.','Proceed' );           
-        }catch (error) {
-            setVerifying(false);
-            return showModal('failed', 'failed', 'error.message','Close' );
+            return showModal('failed', 'Verification Failed', error.message || 'Something went wrong', 'Close');
         }
     };
 
-
     return (
-    <MainContainer>
-        <KeyboardAvoidingContainer>
-        <IconHeader name="lock-open" style={{marginBotton: 30}}/> 
-            <RegularText style={{marginBottom: 25, textAlign: 'center' }}>
-                Enter the 4-digits code sent to your email
+        <MainContainer>
+            <KeyboardAvoidingContainer>
+                <IconHeader name="lock-open" style={{ marginBottom: 30 }} />
+                <RegularText style={{ marginBottom: 25, textAlign: 'center' }}>
+                    Enter the 4-digit code sent to your email
                 </RegularText>
 
                 <StyledCodeInput code={code} SetCode={setCode} maxLength={MAX_CODE_LENGTH} setPinReady={setPinReady} />
 
                 {!verifying && pinReady && <RegularButton onPress={handleEmailVerification}>Verify</RegularButton>}
                 {!verifying && !pinReady && (
-                    <RegularButton disabled={true} style={{backgroundColor: secondary}} textStyle={{color: lightGray}}>
+                    <RegularButton disabled={true} style={{ backgroundColor: secondary }} textStyle={{ color: lightGray }}>
                         Verify
-                        </RegularButton>)}
-                        
-                        
-                        {verifying && (
-                        <RegularButton disabled={true}>
-                          <ActivityIndicator size="small" color={primary} /> 
-                        </RegularButton>
-                        )}
+                    </RegularButton>
+                )}
 
-                        <ResendTimer 
-                        activeResend={activeResend} 
-                        setActiveResend={setActiveResend} 
-                        resendStatus={resendStatus} 
-                        resendingEmail={resendingEmail}
-                        resendEmail={resendEmail}
-                        
-                        />
-                         
-                        <MessageModal 
-                        modalVisible={modalVisible} 
-                        buttonHandler={buttonHandler} 
-                        type={modalMessageType} 
-                        headerText={headerText} 
-                        message={ModalMessage}
-                        buttonText={buttonText}
-                        />
-        </KeyboardAvoidingContainer>
-    </MainContainer>
+                {verifying && (
+                    <RegularButton disabled={true}>
+                        <ActivityIndicator size="small" color={primary} />
+                    </RegularButton>
+                )}
+
+                <ResendTimer
+                    activeResend={activeResend}
+                    setActiveResend={setActiveResend}
+                    resendStatus={resendStatus}
+                    resendingEmail={resendingEmail}
+                    resendEmail={resendEmail}
+                />
+
+                <MessageModal
+                    modalVisible={modalVisible}
+                    buttonHandler={buttonHandler}
+                    type={modalMessageType}
+                    headerText={headerText}
+                    message={ModalMessage}
+                    buttonText={buttonText}
+                />
+            </KeyboardAvoidingContainer>
+        </MainContainer>
     );
 };
 

@@ -183,7 +183,7 @@ const PgRegistration = () => {
       </TouchableOpacity>
     </LinearGradient>
   );
-
+ 
   const renderStep2 = () => (
     <LinearGradient colors={['#ffffff', '#f0f0f0']} style={styles.gradientContainer}>
       <Text style={styles.stepTitle}>Step 2: Tenant Details</Text>
