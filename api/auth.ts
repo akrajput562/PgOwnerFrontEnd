@@ -1,12 +1,13 @@
 import axios from 'axios';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // Define backend base URL
-const API_BASE_URL = 'http://localhost:8080/pg';
-//const API_BASE_URL='http://192.168.29.155:8080/pg'
+//const API_BASE_URL = 'http://localhost:8080/pg';
+const API_BASE_URL='http://192.168.29.155:8080/pg'
 export const apiClient = async (
     endpoint: string,
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
-    body?: any
+    body?: any,
+    authToken?: string
 ) => {
     try {
         let options: {
@@ -17,7 +18,11 @@ export const apiClient = async (
         } = {
             method,
             url: `${API_BASE_URL}${endpoint}`,
-            headers: {},
+            headers: {
+                'Content-Type': body instanceof FormData ? 'multipart/form-data' : 'application/json',
+                // Ensure the Authorization header is included only when authToken exists
+                ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}) // If authToken exists, add it
+            },
         };
 
         // Handle FormData & JSON

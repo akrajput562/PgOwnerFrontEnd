@@ -4,18 +4,19 @@ import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-
+import apiClient from "../api/auth";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const PgRegistration = () => {
+  
   const [step, setStep] = React.useState(1);
   const [propertyDetails, setPropertyDetails] = React.useState({
-    name: '',
-    address: '',
-    pincode: '',
+    pg_name: '',
+    pg_address: '',
+    pin_code: '',
     city: '',
     state: '',
-    houseNo: '',
-    locality: '',
-    propertyType: ''
+    property_type: '',
+  
   });
   const [tenantDetails, setTenantDetails] = React.useState({
     boys: false,
@@ -45,6 +46,7 @@ const PgRegistration = () => {
     amount: '',
     deposit: ''
   });
+  
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -55,18 +57,15 @@ const PgRegistration = () => {
 
   const validateStep1 = () => {
     const newErrors = {};
-    if (!propertyDetails.name) newErrors.name = 'Property name is required';
-    if (!propertyDetails.address) newErrors.address = 'Address is required';
-    if (!propertyDetails.pincode) newErrors.pincode = 'Pincode is required';
+    if (!propertyDetails.pg_name) newErrors.pg_name = 'Property name is required';
+    if (!propertyDetails.pg_address) newErrors.pg_address = 'Address is required';
+    if (!propertyDetails.pin_code) newErrors.pin_code = 'Pincode is required';
     if (!propertyDetails.city) newErrors.city = 'City is required';
     if (!propertyDetails.state) newErrors.state = 'State is required';
-    if (!propertyDetails.houseNo) newErrors.houseNo = 'House number is required';
-    if (!propertyDetails.locality) newErrors.locality = 'Locality is required';
-    if (!propertyDetails.propertyType) newErrors.propertyType = 'Property type is required';
+    if (!propertyDetails.property_type) newErrors.property_type = 'Property type is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const validateStep2 = () => {
     const newErrors = {};
     if (!tenantDetails.boys && !tenantDetails.girls && !tenantDetails.coLive) {
@@ -78,11 +77,6 @@ const PgRegistration = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  const addSharingType = (type) => {
-    setSharingTypes([...sharingTypes, type]);
-  };
-
   const validateStep3 = () => {
     const newErrors = {};
     if (!sharingDetails.type) newErrors.type = 'Sharing type is required';
@@ -92,6 +86,84 @@ const PgRegistration = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const addSharingType = (type) => {
+    setSharingTypes([...sharingTypes, type]);
+  };
+  const submitPropertyDetails = async () => {
+    setIsSubmitting(true);
+    const authToken = await AsyncStorage.getItem('authToken');
+
+    if (!authToken) {
+        Alert.alert("Error", "User is not authenticated!");
+        setIsSubmitting(false);
+        return;
+    }
+
+    try {
+        // Dynamically build the who_can_stay & available_for values
+        const who_can_stay = [];
+        if (tenantDetails.boys) who_can_stay.push("Boys");
+        if (tenantDetails.girls) who_can_stay.push("Girls");
+        if (tenantDetails.coLive) who_can_stay.push("Co-Live");
+
+        const available_for = [];
+        if (tenantDetails.students) available_for.push("Students");
+        if (tenantDetails.professionals) available_for.push("Working Professionals");
+
+        // Build the floors array dynamically
+        const formattedFloors = floors.map(floor => ({
+            floor_no: floor.number,  // Dynamic floor number
+            rooms: floor.rooms.map(room => ({
+                room_no: room.roomNo,
+                sharingType: room.sharingType,
+                amount: room.amount,
+                deposit: room.deposit
+            }))
+        }));
+
+        // Construct final payload
+        const payload = {
+            pg_name: propertyDetails.pg_name,
+            pg_address: propertyDetails.pg_address,
+            pin_code: propertyDetails.pin_code,
+            city: propertyDetails.city,
+            state: propertyDetails.state,
+            property_type: propertyDetails.property_type,
+            who_can_stay: who_can_stay.join(","), // Convert array to comma-separated string
+            available_for: available_for.join(","), // Convert array to comma-separated string
+            floors: formattedFloors
+        };
+
+        console.log("Sending Payload:", JSON.stringify(payload));
+
+        // Send request with JSON payload
+        const response = await apiClient(
+            "/pg/savePgData",
+            "POST",
+            payload, // Send as JSON
+            authToken,
+            { "Content-Type": "application/json" } // Ensure correct headers
+        );
+
+        if (response.success) {
+            Alert.alert("Success", "Property registered successfully!");
+            navigation.navigate("Home");
+        } else {
+            Alert.alert("Error", response.message || "Failed to register PG.");
+        }
+    } catch (error) {
+        Alert.alert("Error", "Something went wrong. Please try again.");
+        console.error("Error submitting form:", error);
+    } finally {
+        setIsSubmitting(false);
+    }
+};
+
+
+
+  
+
+
   const renderStep1 = () => (
     <LinearGradient colors={['#ffffff', '#f0f0f0']} style={styles.gradientContainer}>
       <Text style={[styles.stepTitle, {textAlign: 'center', fontWeight: 'bold'}]}>Add Property</Text>
@@ -99,47 +171,29 @@ const PgRegistration = () => {
         <TextInput
           style={styles.input}
           placeholder="Property Name"
-          value={propertyDetails.name}
-          onChangeText={(text) => setPropertyDetails({ ...propertyDetails, name: text })}
+          value={propertyDetails.pg_name}
+          onChangeText={(text) => setPropertyDetails({ ...propertyDetails, pg_name: text })}
         />
-        {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+        {errors.pg_name && <Text style={styles.errorText}>{errors.pg_name}</Text>}
       </View>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           placeholder="PG Address"
-          value={propertyDetails.address}
-          onChangeText={(text) => setPropertyDetails({ ...propertyDetails, address: text })}
+          value={propertyDetails.pg_address}
+          onChangeText={(text) => setPropertyDetails({ ...propertyDetails, pg_address: text })}
         />
-        {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
+        {errors.pg_address && <Text style={styles.errorText}>{errors.pg_address}</Text>}
       </View>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           placeholder="Pincode"
-          value={propertyDetails.pincode}
-          onChangeText={(text) => setPropertyDetails({ ...propertyDetails, pincode: text })}
+          value={propertyDetails.pin_code}
+          onChangeText={(text) => setPropertyDetails({ ...propertyDetails, pin_code: text })}
           keyboardType="numeric"
         />
-        {errors.pincode && <Text style={styles.errorText}>{errors.pincode}</Text>}
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="House No./Block No./Flat"
-          value={propertyDetails.houseNo}
-          onChangeText={(text) => setPropertyDetails({ ...propertyDetails, houseNo: text })}
-        />
-        {errors.houseNo && <Text style={styles.errorText}>{errors.houseNo}</Text>}
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Locality"
-          value={propertyDetails.locality}
-          onChangeText={(text) => setPropertyDetails({ ...propertyDetails, locality: text })}
-        />
-        {errors.locality && <Text style={styles.errorText}>{errors.locality}</Text>}
+        {errors.pin_code && <Text style={styles.errorText}>{errors.pin_code}</Text>}
       </View>
       <View style={styles.inputContainer}>
         <Picker
@@ -167,8 +221,8 @@ const PgRegistration = () => {
       </View>
       <View style={styles.inputContainer}>
         <Picker
-          selectedValue={propertyDetails.propertyType}
-          onValueChange={(itemValue) => setPropertyDetails({ ...propertyDetails, propertyType: itemValue })}
+          selectedValue={propertyDetails.property_type}
+          onValueChange={(itemValue) => setPropertyDetails({ ...propertyDetails, property_type: itemValue })}
         >
           <Picker.Item label="Select Property Type" value="" />
           <Picker.Item label="PG" value="PG" />
@@ -176,14 +230,14 @@ const PgRegistration = () => {
           <Picker.Item label="Hotel" value="Hotel" />
           <Picker.Item label="Apartment" value="Apartment" />
         </Picker>
-        {errors.propertyType && <Text style={styles.errorText}>{errors.propertyType}</Text>}
+        {errors.property_type && <Text style={styles.errorText}>{errors.property_type}</Text>}
       </View>
       <TouchableOpacity style={styles.nextButton} onPress={() => validateStep1() && setStep(2)}>
         <Text style={styles.nextButtonText}>Next</Text>
       </TouchableOpacity>
     </LinearGradient>
   );
- 
+
   const renderStep2 = () => (
     <LinearGradient colors={['#ffffff', '#f0f0f0']} style={styles.gradientContainer}>
       <Text style={styles.stepTitle}>Step 2: Tenant Details</Text>
@@ -237,7 +291,6 @@ const PgRegistration = () => {
       </TouchableOpacity>
     </LinearGradient>
   );
-
   const renderStep3 = () => (
     <LinearGradient colors={['#ffffff', '#f0f0f0']} style={styles.gradientContainer}>
       <Text style={styles.stepTitle}>Step 3: Sharing Type</Text>
@@ -301,120 +354,112 @@ const PgRegistration = () => {
       </TouchableOpacity>
     </LinearGradient>
   );
-
   const renderStep4 = () => (
     <LinearGradient colors={['#ffffff', '#f0f0f0']} style={styles.gradientContainer}>
       <Text style={styles.stepTitle}>Step 4: Floor & Room Planning</Text>
 
-      {/* Floor Section */}
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Add Floor Planning</Text>
-        <TouchableOpacity style={styles.addButton} onPress={() => setFloors([...floors, { number: '', rooms: [] }])}>
+        <Text style={styles.sectionTitle}>Add Floor</Text>
+        <TouchableOpacity style={styles.addButton} onPress={() => {
+          setFloors([...floors, { number: '', rooms: [] }]);
+          setSelectedFloor(floors.length);
+        }}>
           <Text style={styles.addButtonText}>Add Floor</Text>
         </TouchableOpacity>
 
-        {floors.map((floor, index) => (
-          <View key={index} style={styles.itemContainer}>
-            <TouchableOpacity style={styles.item} onPress={() => setSelectedFloor(index)}>
-              <Text>Floor {index + 1}</Text>
+        {floors.map((floor, floorIndex) => (
+          <View key={floorIndex} style={styles.itemContainer}>
+            <TouchableOpacity style={styles.item} onPress={() => setSelectedFloor(floorIndex)}>
+              <Text>Floor {floorIndex + 1} {floor.number ? `- ${floor.number}` : ''}</Text>
             </TouchableOpacity>
-            {selectedFloor === index && (
+
+            {selectedFloor === floorIndex && (
               <View style={styles.detailsContainer}>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter Floor Number"
-                  value={floorNumber}
-                  onChangeText={setFloorNumber}
-                  keyboardType="numeric"
+                  placeholder="Enter Floor Name/Number"
+                  value={floor.number}
+                  onChangeText={(text) => {
+                    const updatedFloors = [...floors];
+                    updatedFloors[floorIndex].number = text;
+                    setFloors(updatedFloors);
+                  }}
                 />
-                <TouchableOpacity style={styles.saveButton} onPress={() => {
+                <TouchableOpacity style={styles.saveButton} onPress={() => setSelectedFloor(null)}>
+                  <Text style={styles.saveButtonText}>Save</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {floor.number && (
+              <View>
+                <Text style={styles.sectionTitle}>Rooms in {floor.number}</Text>
+                <TouchableOpacity style={styles.addButton} onPress={() => {
                   const updatedFloors = [...floors];
-                  updatedFloors[index].number = floorNumber;
+                  updatedFloors[floorIndex].rooms.push({
+                    room_no: '',
+                    sharingType: '',
+                    amount: '',
+                    deposit: '',
+                  });
                   setFloors(updatedFloors);
-                  setSelectedFloor(null);
                 }}>
-                  <Text style={styles.saveButtonText}>Save</Text>
+                  <Text style={styles.addButtonText}>Add Room</Text>
                 </TouchableOpacity>
+
+                {floor.rooms.map((room, roomIndex) => (
+                  <View key={roomIndex} style={styles.itemContainer}>
+                    <TouchableOpacity style={styles.item} onPress={() => setSelectedRoom(`${floorIndex}-${roomIndex}`)}>
+                      <Text>Room {roomIndex + 1}</Text>
+                    </TouchableOpacity>
+
+                    {selectedRoom === `${floorIndex}-${roomIndex}` && (
+                      <View style={styles.detailsContainer}>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Room No"
+                          value={room.roomNo}
+                          onChangeText={(text) => {
+                            const updatedFloors = [...floors];
+                            updatedFloors[floorIndex].rooms[roomIndex].roomNo = text;
+                            setFloors(updatedFloors);
+                          }}
+                        />
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Amount (INR)"
+                          value={room.amount}
+                          onChangeText={(text) => {
+                            const updatedFloors = [...floors];
+                            updatedFloors[floorIndex].rooms[roomIndex].amount = text;
+                            setFloors(updatedFloors);
+                          }}
+                          keyboardType="numeric"
+                        />
+                        <TouchableOpacity style={styles.saveButton} onPress={() => setSelectedRoom(null)}>
+                          <Text style={styles.saveButtonText}>Save</Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  </View>
+                ))}
               </View>
             )}
           </View>
         ))}
       </View>
 
-      {/* Room Section */}
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Add Room</Text>
-        <TouchableOpacity style={styles.addButton} onPress={() => setRooms([...rooms, {
-          roomNo: '',
-          sharingType: '',
-          amount: '',
-          deposit: ''
-        }])}>
-          <Text style={styles.addButtonText}>Add Room</Text>
-        </TouchableOpacity>
-
-        {rooms.map((room, index) => (
-          <View key={index} style={styles.itemContainer}>
-            <TouchableOpacity style={styles.item} onPress={() => setSelectedRoom(index)}>
-              <Text>Room {index + 1}</Text>
-            </TouchableOpacity>
-            {selectedRoom === index && (
-              <View style={styles.detailsContainer}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Room No"
-                  value={roomDetails.roomNo}
-                  onChangeText={(text) => setRoomDetails({ ...roomDetails, roomNo: text })}
-                />
-                <Picker
-                  selectedValue={roomDetails.sharingType}
-                  onValueChange={(itemValue) => setRoomDetails({ ...roomDetails, sharingType: itemValue })}
-                >
-                  <Picker.Item label="Select Sharing Type" value="" />
-                  <Picker.Item label="Single" value="Single" />
-                  <Picker.Item label="Double" value="Double" />
-                  <Picker.Item label="Triple" value="Triple" />
-                </Picker>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Amount (INR)"
-                  value={roomDetails.amount}
-                  onChangeText={(text) => setRoomDetails({ ...roomDetails, amount: text })}
-                  keyboardType="numeric"
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Deposit (INR)"
-                  value={roomDetails.deposit}
-                  onChangeText={(text) => setRoomDetails({ ...roomDetails, deposit: text })}
-                  keyboardType="numeric"
-                />
-                <TouchableOpacity style={styles.saveButton} onPress={() => {
-                  const updatedRooms = [...rooms];
-                  updatedRooms[index] = roomDetails;
-                  setRooms(updatedRooms);
-                  setSelectedRoom(null);
-                }}>
-                  <Text style={styles.saveButtonText}>Save</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-        ))}
-      </View>
-
-      <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate('Dashboard')}>
+      <TouchableOpacity style={styles.nextButton} onPress={submitPropertyDetails}>
         <Text style={styles.nextButtonText}>Submit</Text>
       </TouchableOpacity>
     </LinearGradient>
   );
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {step === 1 && renderStep1()}
       {step === 2 && renderStep2()}
       {step === 3 && renderStep3()}
-      {step === 4 && renderStep4()}
+       {step === 4 && renderStep4()} 
     </ScrollView>
   );
 };

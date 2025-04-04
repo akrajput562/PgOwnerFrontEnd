@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import { ActivityIndicator } from "react-native";
 import { colors } from "../components/colors";
 const { primary } = colors;
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 //custom component 
 import MainContainer from "../components/Containers/MainContainer";
 import KeyboardAvoidingContainer from "../components/Containers/KeyboardAvoidingContainer";
@@ -14,6 +14,8 @@ import RegularButton from "../components/Buttons/RegularButton";
 import PressableText from "../components/Texts/PressableText";
 import RowContainer from "../components/Containers/RowContainer";
 import apiClient from "../api/auth";
+import jwtDecode from "jwt-decode";
+
 const Login = ({navigation}) =>{
     const [message, setMessage] = useState('');
     const [isSuccessMessage, setIsSuccessMessage] = useState(false);
@@ -21,6 +23,8 @@ const Login = ({navigation}) =>{
     const moveTo = (screen, payload) => {
         navigation.navigate(screen, { ...payload});
     };
+    
+    
 
     const handleLogin = async (credentials, setSubmitting) => {
         try {
@@ -32,9 +36,17 @@ const Login = ({navigation}) =>{
     
             // Call backend API
             const data = await apiClient('/user/login', 'POST', formData);
-            moveTo('Dashboard');
-            console.log('Singin successful:', data);
-    
+            const token = data.authToken;
+          //  const userId = getUserIdFromToken(token);
+            if (token) {
+                // Store token in AsyncStorage
+                await AsyncStorage.setItem('authToken', token);
+            //    await AsyncStorage.setItem('userID', userId);
+                moveTo('Dashboard');
+                console.log('Sign in successful:', data);
+            } else {
+                setMessage('Login failed: Invalid credentials');
+            }
            
           setSubmitting(true);
         }catch (error) {
@@ -42,7 +54,6 @@ const Login = ({navigation}) =>{
             setSubmitting(false);
         }
     };
-
 
     return (
     <MainContainer>
