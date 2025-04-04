@@ -19,6 +19,8 @@ import AddTenant from '../tenants/Addtenant';
 import Rooms from '../screens/Rooms';
 import RoomDetails from '../screens/RoomDetails';
 import PgListScreen from '../pgregistration/PgListScreen';  // New screen added
+import Reports from '../screens/Reports';  // Add this import
+import ProfileScreen from '../screens/ProfileScreen';  // Import ProfileScreen
 
 const Stack = createStackNavigator();
 
@@ -50,12 +52,7 @@ const RootStack = () => {
                 <Stack.Screen
                     name="EmailVerification"
                     component={EmailVerification}
-                    options={{ 
-                        headerTitle: 'Email Verification',
-                        headerBackTitle: '',
-                        headerTruncatedBackTitle: '',
-                        headerBackTitleVisible: false
-                    }}
+                    options={{ headerTitle: 'Email Verification' }}
                 />
                 <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerTitle: 'Forgot Password' }} />
                 <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ headerTitle: 'Reset Password' }} />
@@ -118,8 +115,22 @@ const RootStack = () => {
                         }
                     }}
                 />
+                {/* Reports Screen */}
+                <Stack.Screen
+                    name="Reports"
+                    component={Reports}
+                    options={{
+                        headerShown: false
+                    }}
+                />
                 {/* New PgListScreen added to navigation */}
                 <Stack.Screen name="PgListScreen" component={PgListScreen} options={{ title: 'PG List' }} />
+                {/* Profile Screen */}
+                <Stack.Screen 
+                    name="ProfileScreen" 
+                    component={ProfileScreen} 
+                    options={{ headerShown: false }}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );
