@@ -53,7 +53,7 @@ const PgListScreen = () => {
         style={styles.addPropertyButton} 
         onPress={() => {
           // Navigation placeholder: change to desired screen if needed
-          navigation.navigate('PgListScreen');
+          navigation.navigate('PgRegistration');
         }}
       >
         <Text style={styles.addPropertyButtonText}>Add Property</Text>

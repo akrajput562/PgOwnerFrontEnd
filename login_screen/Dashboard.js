@@ -13,77 +13,87 @@ const Dashboard = ({ navigation }) => {
         <TouchableOpacity>
           <Ionicons name="home" size={24} color="white" />
         </TouchableOpacity>
-
         <Text style={styles.headerTitle}>Dashboard</Text>
-
         <View style={styles.userInfo}>
           <Text style={styles.userName}>John Doe</Text>
           <Ionicons name="chevron-down" size={16} color="white" />
         </View>
-        
       </View>
-       
+      
       {/* Search Bar */}
       <SearchBarSection />
 
-      {/* Metrics Grid */}
-      <ScrollView style={styles.metricsContainer} contentContainerStyle={{paddingBottom: 100}}>
-        <View style={styles.metricsGrid}>
-          <MetricCard title="Properties" value="5" />
-          <MetricCard title="Total Rooms" value="120" />
-          <MetricCard title="Total Beds" value="240" />
-          <MetricCard title="Occupancy" value="75" />
-          <MetricCard title="Vacant Beds" value="10" />
-          <TouchableOpacity style={[styles.metricCard, styles.metricCardRegister]} onPress={() => navigation.navigate('PgRegistration')}>
-            <Text style={styles.registerButtonText}>Register New PG</Text>
-          </TouchableOpacity>
-           
+      {/* Spacing after Search Bar */}
+      <View style={{ height: 15 }} />
+
+      {/* Scrollable Content */}
+      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}>
+        {/* First Metrics Box */}
+        <View style={styles.metricsBox}>
+          <View style={styles.metricsGrid}>
+            <MetricCard title="Properties" value="5" />
+            <MetricCard title="Total Rooms" value="120" />
+            <MetricCard title="Total Beds" value="240" />
+            <MetricCard title="Occupancy" value="75" />
+            <MetricCard title="Vacant Beds" value="10" />
+            <TouchableOpacity style={[styles.metricCard, styles.metricCardRegister]} onPress={() => navigation.navigate('PgRegistration')}>
+              <Text style={styles.registerButtonText}>Register New PG</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Spacing */}
+        <View style={{ height: 20 }} />
+
+        {/* Second Metrics Box */}
+        <View style={styles.metricsBox}>
+          <View style={styles.metricsGrid}>
+            <MetricCard title="Amount Paid " value={50}/>
+            <MetricCard title="amount pending" value={60} />
+            <MetricCard title="total amount " value={100}  />
+             
+          </View>
         </View>
       </ScrollView>
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        
-        <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '100%'}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
           <NavItem 
-            icon={<MaterialCommunityIcons name="view-dashboard" size={30} color="black" />} 
-            label="Dashboard" 
-            onPress={() => navigation.navigate("Dashboard")} 
-          />
+          icon={<MaterialCommunityIcons name="view-dashboard" size={30} color="black" />} 
+          label="Dashboard" 
+          onPress={() => navigation.navigate("Dashboard")} />
           <NavItem 
-            icon={<FontAwesome6 name="building-user" size={30} color="black" />} 
-            label="Manage PG" 
-            onPress={() => navigation.navigate("PgListScreen")} 
-          />
+          icon={<FontAwesome6 name="building-user" size={30} color="black" />} 
+          label="Manage PG" 
+          onPress={() => navigation.navigate("PgListScreen")} />
           <NavItem 
-            icon={<FontAwesome name="bed" size={30} color="black" />} 
-            label="Rooms" 
-            onPress={() => navigation.navigate("Rooms")} 
-          />
+          icon={<FontAwesome name="bed" size={30} color="black" />} 
+          label="Rooms" 
+          onPress={() => navigation.navigate("Rooms")} />
           <NavItem 
-            icon={<FontAwesome6 name="ticket" size={30} color="black" />} 
-            label="Tickets" 
-            onPress={() => navigation.navigate("Tickets")} 
-          />
+          icon={<FontAwesome6 name="ticket" size={30} color="black" />} 
+          label="Tickets" 
+          onPress={() => navigation.navigate("Tickets")} />
           <NavItem 
-            icon={<MaterialCommunityIcons name="home-account" size={30} color="black" />} 
-            label="Tenants" 
-            onPress={() => navigation.navigate("AddTenant")} 
-          />
+          icon={<MaterialCommunityIcons name="home-account" size={30} color="black" />} 
+          label="Tenants" 
+          onPress={() => navigation.navigate("AddTenant")} />
         </View>
       </View>
-
     </View>
   );
 };
 
+// Metric Card Component
 const MetricCard = ({ title, value }) => (
   <View style={styles.metricCard}>
     <Text style={styles.metricValue}>{value}</Text>
-    <Text style={styles.metricTitle}>{title}</Text>
+    <Text style={styles.metricTitle} numberOfLines={1} ellipsizeMode="tail">{title}</Text>
   </View>
 );
 
+// Navigation Button Component
 const NavItem = ({ icon, label, onPress }) => (
   <TouchableOpacity style={styles.navItem} onPress={onPress}>
     <Text style={styles.navIcon}>{icon}</Text>
@@ -91,51 +101,17 @@ const NavItem = ({ icon, label, onPress }) => (
   </TouchableOpacity>
 );
 
+// Search Bar Component
 const SearchBarSection = () => (
   <View style={styles.searchSection}>
     <View style={styles.searchContainer}>
       <Ionicons name="search" size={20} color="#666666" />
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search Properties"
-        placeholderTextColor="#666666"
-      />
+      <TextInput style={styles.searchInput} placeholder="Search Properties" placeholderTextColor="#666666" />
     </View> 
   </View>
 );
 
-const PropertyStatusCard = () => {
-};
-
-const NavigationTabs = () => {
-  const [activeTab, setActiveTab] = useState('Dashboard');
-
-  const tabs = ['Dashboard', 'Rooms', 'Listing', 'Complaint', 'Food'];
-
-  return (
-    <View style={styles.tabContainer}>
-      {tabs.map((tab) => (
-        <TouchableOpacity
-          key={tab}
-          style={[
-            styles.tabItem,
-            activeTab === tab && styles.activeTab,
-          ]}
-          onPress={() => setActiveTab(tab)}
-        >
-          <Text style={[
-            styles.tabText,
-            activeTab === tab && styles.activeTabText,
-          ]}>
-            {tab}
-          </Text>
-          {activeTab === tab && <View style={styles.tabUnderline} />}
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-};
-
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -158,120 +134,40 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginRight: 8,
   },
-  statusIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  time: {
-    color: 'white',
-  },
-  metricsGrid: {
-    flexDirection: 'row',
-    
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  metricCard: {
-    width: '30%',
-    backgroundColor: '#ffffff',
-    padding: 20,
+  metricsBox: {
+    backgroundColor: 'rgba(255, 255, 255, 0.6)', 
     borderRadius: 10,
-    marginBottom: 15,
+    padding: 10,
+    marginVertical: 5,
+    width: '95%', 
+    alignSelf: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  metricsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  metricCard: {
+    width: '30%',
+    aspectRatio: 1,
+    backgroundColor: '#ffffff',
+    padding: 4,
+    borderRadius: 20,
+    marginBottom: 10,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   metricCardRegister: {
-    backgroundColor: 'black',
-    
-  },
-  metricValue: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    textAlign: 'center',
-    color: '#333333',
+    backgroundColor: 'white',
   },
   metricTitle: {
-    fontSize: 10,
     textAlign: 'center',
-    color: '#666666',
-  },
-  registerButton: {
-    backgroundColor: '#2196F3',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    marginVertical: 20,
-    alignSelf: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  registerButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  bottomNav: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  navItem: {
-    alignItems: 'center',
-    paddingHorizontal: 10,
-  },
-  navIcon: {
-    fontSize: 30,
-  },
-  navLabel: {
-    fontSize: 12,
-    marginTop: 5,
-    color: '#333333',
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#ffffff',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  tabItem: {
-    alignItems: 'center',
-    paddingHorizontal: 16,
-  },
-  activeTab: {
-    position: 'relative',
-  },
-  tabText: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  activeTabText: {
-    color: '#2196F3',
-    fontWeight: 'bold',
-  },
-  tabUnderline: {
-    position: 'absolute',
-    bottom: -12,
-    height: 2,
-    width: '100%',
-    backgroundColor: '#2196F3',
   },
   searchSection: {
     padding: 16,
@@ -290,86 +186,26 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 16,
   },
-  filterButtons: {
+  bottomNav: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-  },
-  filterButton: {
-    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
     alignItems: 'center',
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#f5f5f5',
   },
-  filterText: {
-    marginRight: 8,
-    color: '#666666',
-  },
-  statusIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  statusCard: {
-    margin: 16,
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  navItem: {
     alignItems: 'center',
-    marginBottom: 8,
+    justifyContent: 'center',
   },
-  ownerName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  statusBadge: {
-    backgroundColor: '#2196F3',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  statusBadgeText: {
-    color: '#ffffff',
-    fontSize: 12,
-  },
-  roomInfo: {
-    color: '#666666',
-    marginBottom: 16,
-  },
-  statusList: {
-    marginBottom: 16,
-  },
-  statusItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  navIcon: {
     alignItems: 'center',
-    paddingVertical: 8,
-  },
-  statusLabel: {
-    flex: 1,
-    marginLeft: 8,
-    color: '#666666',
-  },
-  statusCount: {
-    fontWeight: 'bold',
-  },
-  viewMoreButton: {
-    alignItems: 'center',
-    padding: 8,
-  },
-  viewMoreText: {
-    color: '#2196F3',
-    fontWeight: 'bold',
+    justifyContent: 'center',
   },
 });
 
