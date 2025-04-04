@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ActivityIndicator } from "react-native";
 import { colors } from "../components/colors";
 const { primary, secondary, lightGray } = colors;
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // Custom components
 import MainContainer from "../components/Containers/MainContainer";
 import KeyboardAvoidingContainer from "../components/Containers/KeyboardAvoidingContainer";
@@ -13,7 +13,7 @@ import StyledCodeInput from "../components/Inputs/StyledCodeInput";
 import ResendTimer from "../components/Timers/ResendTimer";
 import MessageModal from "../components/Modals/MessageModal";
 import apiClient from "../api/auth";
-const EmailVerification = ({ navigation, route }) => {
+const EmailVerification = async ({ navigation, route }) => {
     // ✅ Get user from navigation params
     const { user } = route.params || {}; 
 
@@ -74,7 +74,7 @@ const EmailVerification = ({ navigation, route }) => {
             alert('Email Resend Failed: ' + error.message);
         }
     };
-
+    const userId = await AsyncStorage.getItem('user_id');
     const handleEmailVerification = async () => {
         try {
             setVerifying(true);
@@ -83,15 +83,17 @@ const EmailVerification = ({ navigation, route }) => {
                 formData.append(key, user[key]); // Add user details
             });
             formData.append("otp", code); // Add OTP separately
+            formData.append("status",1);
+            formData.append("role_id",1)
+            formData.append("user_id",userId)
 console.log(formData)
             // Send request
-            const data = await apiClient('/pg/verifyOtp', 'POST', formData, {
-                headers: { "Content-Type": "multipart/form-data" }
-            });
+            const data = await apiClient('/pg/verifyOtp', 'POST', formData);
 
-            if (data.success) {
+            if (data.status === "1") {
                 setVerifying(true);
                 return showModal('success', 'All Good!', 'Your email has been verified.', 'Proceed');
+                moveTo('Dashboard');
             } else {
                 setVerifying(false);
                 return showModal('failed', 'Verification Failed', data.message || 'Invalid code', 'Close');
