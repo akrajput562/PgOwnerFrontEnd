@@ -50,7 +50,12 @@ const RootStack = () => {
                 <Stack.Screen
                     name="EmailVerification"
                     component={EmailVerification}
-                    options={{ headerTitle: 'Email Verification' }}
+                    options={{ 
+                        headerTitle: 'Email Verification',
+                        headerBackTitle: '',
+                        headerTruncatedBackTitle: '',
+                        headerBackTitleVisible: false
+                    }}
                 />
                 <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerTitle: 'Forgot Password' }} />
                 <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ headerTitle: 'Reset Password' }} />
