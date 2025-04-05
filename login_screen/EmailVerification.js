@@ -13,9 +13,13 @@ import StyledCodeInput from "../components/Inputs/StyledCodeInput";
 import ResendTimer from "../components/Timers/ResendTimer";
 import MessageModal from "../components/Modals/MessageModal";
 import apiClient from "../api/auth";
-const EmailVerification = async ({ navigation, route }) => {
+
+const EmailVerification = ({ navigation, route }) => {
     // ✅ Get user from navigation params
     const { user } = route.params || {}; 
+
+    // State to store user ID
+    const [userId, setUserId] = useState('');
 
     // OTP input
     const MAX_CODE_LENGTH = 4;
@@ -34,6 +38,19 @@ const EmailVerification = async ({ navigation, route }) => {
     const [headerText, setHeaderText] = useState('');
     const [ModalMessage, setModalMessage] = useState('');
     const [buttonText, setButtonText] = useState('');
+
+    // Get userId from AsyncStorage
+    useEffect(() => {
+        const getUserId = async () => {
+            try {
+                const id = await AsyncStorage.getItem('user_id');
+                setUserId(id);
+            } catch (error) {
+                console.log('Error retrieving userId:', error);
+            }
+        };
+        getUserId();
+    }, []);
 
     const moveTo = (screen, payload) => {
         navigation.navigate(screen, { ...payload });
@@ -74,7 +91,7 @@ const EmailVerification = async ({ navigation, route }) => {
             alert('Email Resend Failed: ' + error.message);
         }
     };
-    const userId = await AsyncStorage.getItem('user_id');
+
     const handleEmailVerification = async () => {
         try {
             setVerifying(true);
@@ -86,7 +103,8 @@ const EmailVerification = async ({ navigation, route }) => {
             formData.append("status",1);
             formData.append("role_id",1)
             formData.append("user_id",userId)
-console.log(formData)
+            console.log(formData)
+
             // Send request
             const data = await apiClient('/pg/verifyOtp', 'POST', formData);
 

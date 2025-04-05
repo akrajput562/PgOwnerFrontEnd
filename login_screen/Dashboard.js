@@ -15,8 +15,9 @@ const Dashboard = ({ navigation }) => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Dashboard</Text>
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>John Doe</Text>
-          <Ionicons name="chevron-down" size={16} color="white" />
+          <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
+            <Ionicons name="person-circle" size={28} color="white" />
+          </TouchableOpacity>
         </View>
       </View>
       
@@ -73,8 +74,8 @@ const Dashboard = ({ navigation }) => {
           onPress={() => navigation.navigate("Rooms")} />
           <NavItem 
           icon={<FontAwesome6 name="ticket" size={30} color="black" />} 
-          label="Tickets" 
-          onPress={() => navigation.navigate("Tickets")} />
+          label="Reports" 
+          onPress={() => navigation.navigate("Reports")} />
           <NavItem 
           icon={<MaterialCommunityIcons name="home-account" size={30} color="black" />} 
           label="Tenants" 
