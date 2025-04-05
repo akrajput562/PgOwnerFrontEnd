@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, StatusBar, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'; 
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const Dashboard = ({ navigation }) => {
   return (
@@ -32,13 +33,29 @@ const Dashboard = ({ navigation }) => {
         {/* First Metrics Box */}
         <View style={styles.metricsBox}>
           <View style={styles.metricsGrid}>
-            <MetricCard title="Properties" value="5" />
-            <MetricCard title="Total Rooms" value="120" />
-            <MetricCard title="Total Beds" value="240" />
+            <MetricCard 
+              title="Properties" 
+              value="5" 
+              onPress={() => navigation.navigate('PgListScreen')}
+            />
+            <MetricCard 
+              title="Total Rooms" 
+              value="120" 
+              onPress={() => navigation.navigate('Rooms')}
+            />
+            <MetricCard 
+              title="Total Beds" 
+              value="240" 
+              onPress={() => navigation.navigate('BedsAvailability')}
+            />
             <MetricCard title="Occupancy" value="75" />
             <MetricCard title="Vacant Beds" value="10" />
-            <TouchableOpacity style={[styles.metricCard, styles.metricCardRegister]} onPress={() => navigation.navigate('PgRegistration')}>
-              <Text style={styles.registerButtonText}>Register New PG</Text>
+            <TouchableOpacity 
+              style={[styles.metricCard, styles.metricCardNotice]} 
+              onPress={() => navigation.navigate('BedsAvailability', { initialTab: 'notice' })}
+            >
+              <Ionicons name="notifications" size={24} color="#E53935" />
+              <Text style={styles.noticeButtonText}>Under Notice</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -108,6 +125,36 @@ const Dashboard = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
+        
+        {/* Spacing */}
+        <View style={{ height: 20 }} />
+        
+        {/* Tenant Requests Button */}
+        <View style={styles.tenantRequestsContainer}>
+          <TouchableOpacity 
+            style={styles.tenantRequestsButton}
+            onPress={() => navigation.navigate('TenantRequests', { initialTab: 'pending' })}
+          >
+            <View style={styles.tenantRequestsContent}>
+              <MaterialIcons name="person-add" size={24} color="white" />
+              <Text style={styles.tenantRequestsText}>Tenant Requests</Text>
+            </View>
+            <View style={styles.requestBadgeContainer}>
+              <View style={styles.requestBadge}>
+                <Text style={styles.requestBadgeText}>3</Text>
+                <Text style={styles.requestBadgeLabel}>Pending</Text>
+              </View>
+              <View style={[styles.requestBadge, styles.approvedBadge]}>
+                <Text style={[styles.requestBadgeText, styles.approvedBadgeText]}>2</Text>
+                <Text style={[styles.requestBadgeLabel, styles.approvedBadgeLabel]}>Approved</Text>
+              </View>
+              <View style={[styles.requestBadge, styles.rejectedBadge]}>
+                <Text style={[styles.requestBadgeText, styles.rejectedBadgeText]}>2</Text>
+                <Text style={[styles.requestBadgeLabel, styles.rejectedBadgeLabel]}>Rejected</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
 
       {/* Bottom Navigation */}
@@ -132,19 +179,42 @@ const Dashboard = ({ navigation }) => {
           <NavItem 
           icon={<MaterialCommunityIcons name="home-account" size={30} color="black" />} 
           label="Tenants" 
-          onPress={() => navigation.navigate("AddTenant")} />
+          onPress={() => handleTenantsPress(navigation)} />
         </View>
       </View>
     </View>
   );
 };
 
+// Handle tenants menu options
+const handleTenantsPress = (navigation) => {
+  // Create a simple menu with options
+  Alert.alert(
+    "Tenant Management",
+    "Select an option",
+    [
+      {
+        text: "Add Tenant",
+        onPress: () => navigation.navigate("AddTenant")
+      },
+      {
+        text: "Tenant Requests",
+        onPress: () => navigation.navigate("TenantRequests", { initialTab: 'pending' })
+      },
+      {
+        text: "Cancel",
+        style: "cancel"
+      }
+    ]
+  );
+};
+
 // Metric Card Component
-const MetricCard = ({ title, value }) => (
-  <View style={styles.metricCard}>
+const MetricCard = ({ title, value, onPress }) => (
+  <TouchableOpacity style={styles.metricCard} onPress={onPress}>
     <Text style={styles.metricValue}>{value}</Text>
     <Text style={styles.metricTitle} numberOfLines={1} ellipsizeMode="tail">{title}</Text>
-  </View>
+  </TouchableOpacity>
 );
 
 // Navigation Button Component
@@ -219,6 +289,11 @@ const styles = StyleSheet.create({
   },
   metricCardRegister: {
     backgroundColor: 'white',
+  },
+  metricCardNotice: {
+    backgroundColor: '#FFEBEE',
+    borderWidth: 1,
+    borderColor: '#FFCDD2',
   },
   metricTitle: {
     textAlign: 'center',
@@ -331,6 +406,81 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#43A047',
     fontWeight: '500',
+  },
+  tenantRequestsButton: {
+    backgroundColor: '#1976D2',
+    borderRadius: 8,
+    padding: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  tenantRequestsContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  tenantRequestsText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    marginLeft: 10,
+  },
+  requestBadgeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 5,
+  },
+  requestBadge: {
+    backgroundColor: '#FFF9C4',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#FBC02D',
+    width: '30%',
+  },
+  approvedBadge: {
+    backgroundColor: '#E8F5E9',
+    borderColor: '#43A047',
+  },
+  rejectedBadge: {
+    backgroundColor: '#FFEBEE',
+    borderColor: '#E53935',
+  },
+  requestBadgeText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#F57F17',
+  },
+  requestBadgeLabel: {
+    fontSize: 12,
+    color: '#F57F17',
+  },
+  approvedBadgeText: {
+    color: '#2E7D32',
+  },
+  approvedBadgeLabel: {
+    color: '#2E7D32',
+  },
+  rejectedBadgeText: {
+    color: '#C62828',
+  },
+  rejectedBadgeLabel: {
+    color: '#C62828',
+  },
+  noticeButtonText: {
+    color: '#E53935',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  tenantRequestsContainer: {
+    marginHorizontal: 16,
+    marginBottom: 16,
   },
 });
 

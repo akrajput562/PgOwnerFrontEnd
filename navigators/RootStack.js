@@ -23,6 +23,7 @@ import Reports from '../screens/Reports';  // Add this import
 import ProfileScreen from '../screens/ProfileScreen';  // Import ProfileScreen
 
 import BedsAvailability from '../screens/BedsAvailability'; // Import BedsAvailability
+import TenantRequests from '../screens/TenantRequests';
 
 const Stack = createStackNavigator();
 
@@ -139,6 +140,11 @@ const RootStack = () => {
                 <Stack.Screen 
                     name="BedsAvailability" 
                     component={BedsAvailability} 
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="TenantRequests"
+                    component={TenantRequests}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
