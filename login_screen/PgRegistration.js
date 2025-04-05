@@ -46,7 +46,10 @@ const PgRegistration = () => {
     amount: '',
     deposit: ''
   });
-  
+  const sharingTypeOptions = [
+    "1 Sharing", "2 Sharing", "3 Sharing", "4 Sharing", "5 Sharing",
+    "6 Sharing", "7 Sharing", "8 Sharing", "9 Sharing", "10 Sharing"
+  ];
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -113,11 +116,12 @@ const PgRegistration = () => {
         // Build the floors array dynamically
         const formattedFloors = floors.map(floor => ({
             floor_no: floor.number,  // Dynamic floor number
-            rooms: floor.rooms.map(room => ({
+            room: floor.rooms.map(room => ({
                 room_no: room.roomNo,
                 sharingType: room.sharingType,
                 amount: room.amount,
-                deposit: room.deposit
+                deposit: room.deposit,
+                no_of_beds:room.no_of_beds
             }))
         }));
 
@@ -286,93 +290,37 @@ const PgRegistration = () => {
       </View>
       {errors.tenantType && <Text style={styles.errorText}>{errors.tenantType}</Text>}
       {errors.tenantCategory && <Text style={styles.errorText}>{errors.tenantCategory}</Text>}
-      <TouchableOpacity style={styles.nextButton} onPress={() => validateStep2() && setStep(3)}>
+      <TouchableOpacity style={styles.nextButton} onPress={() => validateStep2() &&  setStep(4)}>
         <Text style={styles.nextButtonText}>Next</Text>
       </TouchableOpacity>
     </LinearGradient>
   );
-  const renderStep3 = () => (
-    <LinearGradient colors={['#ffffff', '#f0f0f0']} style={styles.gradientContainer}>
-      <Text style={styles.stepTitle}>Step 3: Sharing Type</Text>
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Add Sharing Type</Text>
-        <View style={styles.rowContainer}>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => addSharingType('Single')}
-          >
-            <Text style={styles.addButtonText}>Add Single</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => addSharingType('Double')}
-          >
-            <Text style={styles.addButtonText}>Add Double</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => addSharingType('Triple')}
-          >
-            <Text style={styles.addButtonText}>Add Triple</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.inputContainer}>
-          <Picker
-            selectedValue={sharingDetails.type}
-            onValueChange={(itemValue) => setSharingDetails({ ...sharingDetails, type: itemValue })}
-          >
-            <Picker.Item label="Select Sharing Type" value="" />
-            {sharingTypes.map((type) => (
-              <Picker.Item key={type} label={type} value={type} />
-            ))}
-          </Picker>
-          {errors.type && <Text style={styles.errorText}>{errors.type}</Text>}
-        </View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Rent Amount (INR)"
-            value={sharingDetails.rentAmount}
-            onChangeText={(text) => setSharingDetails({ ...sharingDetails, rentAmount: text })}
-            keyboardType="numeric"
-          />
-          {errors.rentAmount && <Text style={styles.errorText}>{errors.rentAmount}</Text>}
-        </View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Deposit Amount (INR)"
-            value={sharingDetails.depositAmount}
-            onChangeText={(text) => setSharingDetails({ ...sharingDetails, depositAmount: text })}
-            keyboardType="numeric"
-          />
-          {errors.depositAmount && <Text style={styles.errorText}>{errors.depositAmount}</Text>}
-        </View>
-      </View>
-      <TouchableOpacity style={styles.nextButton} onPress={() => validateStep3() && setStep(4)}>
-        <Text style={styles.nextButtonText}>Next</Text>
-      </TouchableOpacity>
-    </LinearGradient>
-  );
+
   const renderStep4 = () => (
     <LinearGradient colors={['#ffffff', '#f0f0f0']} style={styles.gradientContainer}>
       <Text style={styles.stepTitle}>Step 4: Floor & Room Planning</Text>
-
+  
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Add Floor</Text>
-        <TouchableOpacity style={styles.addButton} onPress={() => {
-          setFloors([...floors, { number: '', rooms: [] }]);
-          setSelectedFloor(floors.length);
-        }}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            setFloors([...floors, { number: '', rooms: [] }]);
+            setSelectedFloor(floors.length);
+          }}
+        >
           <Text style={styles.addButtonText}>Add Floor</Text>
         </TouchableOpacity>
-
+  
         {floors.map((floor, floorIndex) => (
           <View key={floorIndex} style={styles.itemContainer}>
-            <TouchableOpacity style={styles.item} onPress={() => setSelectedFloor(floorIndex)}>
+            <TouchableOpacity
+              style={styles.item}
+              onPress={() => setSelectedFloor(floorIndex)}
+            >
               <Text>Floor {floorIndex + 1} {floor.number ? `- ${floor.number}` : ''}</Text>
             </TouchableOpacity>
-
+  
             {selectedFloor === floorIndex && (
               <View style={styles.detailsContainer}>
                 <TextInput
@@ -385,34 +333,44 @@ const PgRegistration = () => {
                     setFloors(updatedFloors);
                   }}
                 />
-                <TouchableOpacity style={styles.saveButton} onPress={() => setSelectedFloor(null)}>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={() => setSelectedFloor(null)}
+                >
                   <Text style={styles.saveButtonText}>Save</Text>
                 </TouchableOpacity>
               </View>
             )}
-
+  
             {floor.number && (
               <View>
                 <Text style={styles.sectionTitle}>Rooms in {floor.number}</Text>
-                <TouchableOpacity style={styles.addButton} onPress={() => {
-                  const updatedFloors = [...floors];
-                  updatedFloors[floorIndex].rooms.push({
-                    room_no: '',
-                    sharingType: '',
-                    amount: '',
-                    deposit: '',
-                  });
-                  setFloors(updatedFloors);
-                }}>
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={() => {
+                    const updatedFloors = [...floors];
+                    updatedFloors[floorIndex].rooms.push({
+                      roomNo: '',
+                      sharingType: '',
+                      noOfBeds: '',
+                      amount: '',
+                      deposit: ''
+                    });
+                    setFloors(updatedFloors);
+                  }}
+                >
                   <Text style={styles.addButtonText}>Add Room</Text>
                 </TouchableOpacity>
-
+  
                 {floor.rooms.map((room, roomIndex) => (
                   <View key={roomIndex} style={styles.itemContainer}>
-                    <TouchableOpacity style={styles.item} onPress={() => setSelectedRoom(`${floorIndex}-${roomIndex}`)}>
+                    <TouchableOpacity
+                      style={styles.item}
+                      onPress={() => setSelectedRoom(`${floorIndex}-${roomIndex}`)}
+                    >
                       <Text>Room {roomIndex + 1}</Text>
                     </TouchableOpacity>
-
+  
                     {selectedRoom === `${floorIndex}-${roomIndex}` && (
                       <View style={styles.detailsContainer}>
                         <TextInput
@@ -425,6 +383,25 @@ const PgRegistration = () => {
                             setFloors(updatedFloors);
                           }}
                         />
+  
+                        {/* Sharing Type Picker */}
+                        <Picker
+                          selectedValue={room.sharingType}
+                          onValueChange={(itemValue) => {
+                            const updatedFloors = [...floors];
+                            updatedFloors[floorIndex].rooms[roomIndex].sharingType = itemValue;
+                            updatedFloors[floorIndex].rooms[roomIndex].no_of_beds = parseInt(itemValue.split(" ")[0]);
+                            setFloors(updatedFloors);
+                          }}
+                        >
+                          <Picker.Item label="Select Sharing Type" value="" />
+                          {sharingTypeOptions.map((type, index) => (
+                            <Picker.Item key={index} label={type} value={type} />
+                          ))}
+                        </Picker>
+  
+                        <Text style={styles.label}>No of Beds: {room.no_of_beds || '-'}</Text>
+  
                         <TextInput
                           style={styles.input}
                           placeholder="Amount (INR)"
@@ -436,7 +413,22 @@ const PgRegistration = () => {
                           }}
                           keyboardType="numeric"
                         />
-                        <TouchableOpacity style={styles.saveButton} onPress={() => setSelectedRoom(null)}>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Deposit (INR)"
+                          value={room.deposit}
+                          onChangeText={(text) => {
+                            const updatedFloors = [...floors];
+                            updatedFloors[floorIndex].rooms[roomIndex].deposit = text;
+                            setFloors(updatedFloors);
+                          }}
+                          keyboardType="numeric"
+                        />
+  
+                        <TouchableOpacity
+                          style={styles.saveButton}
+                          onPress={() => setSelectedRoom(null)}
+                        >
                           <Text style={styles.saveButtonText}>Save</Text>
                         </TouchableOpacity>
                       </View>
@@ -448,7 +440,7 @@ const PgRegistration = () => {
           </View>
         ))}
       </View>
-
+  
       <TouchableOpacity style={styles.nextButton} onPress={submitPropertyDetails}>
         <Text style={styles.nextButtonText}>Submit</Text>
       </TouchableOpacity>
