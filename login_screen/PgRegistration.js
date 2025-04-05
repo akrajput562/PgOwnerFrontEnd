@@ -121,7 +121,7 @@ const PgRegistration = () => {
                 sharingType: room.sharingType,
                 amount: room.amount,
                 deposit: room.deposit,
-                no_of_beds:room.no_of_beds
+                no_of_beds: room.noOfBeds || 0 
             }))
         }));
 
@@ -149,7 +149,7 @@ const PgRegistration = () => {
             { "Content-Type": "application/json" } // Ensure correct headers
         );
 
-        if (response.success) {
+        if (response.Status ===201) {
             Alert.alert("Success", "Property registered successfully!");
             navigation.navigate("Home");
         } else {
@@ -390,7 +390,10 @@ const PgRegistration = () => {
                           onValueChange={(itemValue) => {
                             const updatedFloors = [...floors];
                             updatedFloors[floorIndex].rooms[roomIndex].sharingType = itemValue;
-                            updatedFloors[floorIndex].rooms[roomIndex].no_of_beds = parseInt(itemValue.split(" ")[0]);
+                            const numBeds = parseInt(itemValue.split(" ")[0]);
+                            updatedFloors[floorIndex].rooms[roomIndex].noOfBeds = numBeds || '';
+                            setFloors(updatedFloors);
+
                             setFloors(updatedFloors);
                           }}
                         >
@@ -400,7 +403,7 @@ const PgRegistration = () => {
                           ))}
                         </Picker>
   
-                        <Text style={styles.label}>No of Beds: {room.no_of_beds || '-'}</Text>
+                        <Text style={styles.label}>No of Beds: {room.numBeds || '-'}</Text>
   
                         <TextInput
                           style={styles.input}

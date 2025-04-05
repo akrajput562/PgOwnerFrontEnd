@@ -21,7 +21,7 @@ import RoomDetails from '../screens/RoomDetails';
 import PgListScreen from '../pgregistration/PgListScreen';  // New screen added
 import Reports from '../screens/Reports';  // Add this import
 import ProfileScreen from '../screens/ProfileScreen';  // Import ProfileScreen
-import EditProfile from '../screens/EditProfile';  // Import EditProfile
+
 import BedsAvailability from '../screens/BedsAvailability'; // Import BedsAvailability
 
 const Stack = createStackNavigator();
@@ -134,11 +134,7 @@ const RootStack = () => {
                     options={{ headerShown: false }}
                 />
                 {/* Edit Profile Screen */}
-                <Stack.Screen 
-                    name="EditProfile" 
-                    component={EditProfile} 
-                    options={{ headerShown: false }}
-                />
+               
                 {/* Beds Availability Screen */}
                 <Stack.Screen 
                     name="BedsAvailability" 
