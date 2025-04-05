@@ -55,6 +55,59 @@ const Dashboard = ({ navigation }) => {
              
           </View>
         </View>
+
+        {/* Beds Availability Stats */}
+        <View style={styles.bedsAvailabilityContainer}>
+          <View style={styles.bedsAvailabilityHeader}>
+            <Text style={styles.sectionTitle}>Beds Availability</Text>
+            <TouchableOpacity 
+              style={styles.viewAllButton}
+              onPress={() => navigation.navigate('BedsAvailability')}
+            >
+              <Text style={styles.viewAllText}>View All</Text>
+              <Ionicons name="chevron-forward" size={14} color="#0089fa" />
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.bedsStatsContainer}>
+            <TouchableOpacity 
+              style={[styles.bedStatCard, styles.vacantBedCard]}
+              onPress={() => navigation.navigate('BedsAvailability', { initialTab: 'vacant' })}
+            >
+              <View style={[styles.bedStatIconContainer, { backgroundColor: '#E8F5E9' }]}>
+                <MaterialCommunityIcons name="bed-empty" size={24} color="#43A047" />
+              </View>
+              <Text style={styles.bedStatCount}>8</Text>
+              <Text style={styles.bedStatLabel}>Vacant</Text>
+              <View style={styles.vacantBedDetails}>
+                <Text style={styles.vacantBedText}>Tap to view details</Text>
+                <Ionicons name="arrow-forward" size={14} color="#43A047" />
+              </View>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.bedStatCard}
+              onPress={() => navigation.navigate('BedsAvailability', { initialTab: 'occupied' })}
+            >
+              <View style={[styles.bedStatIconContainer, { backgroundColor: '#E3F2FD' }]}>
+                <MaterialCommunityIcons name="bed" size={24} color="#1976D2" />
+              </View>
+              <Text style={styles.bedStatCount}>42</Text>
+              <Text style={styles.bedStatLabel}>Occupied</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.bedStatCard}
+              onPress={() => navigation.navigate('BedsAvailability', { initialTab: 'notice' })}
+            >
+              <View style={[styles.bedStatIconContainer, { backgroundColor: '#FFEBEE' }]}>
+                <Ionicons name="notifications" size={24} color="#E53935" />
+              </View>
+              <Text style={styles.bedStatCount}>5</Text>
+              <Text style={styles.bedStatLabel}>Under Notice</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </ScrollView>
 
       {/* Bottom Navigation */}
@@ -207,6 +260,77 @@ const styles = StyleSheet.create({
   navIcon: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  bedsAvailabilityContainer: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  bedsAvailabilityHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  bedsStatsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  bedStatCard: {
+    alignItems: 'center',
+    width: '30%',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+  },
+  bedStatIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  bedStatCount: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  bedStatLabel: {
+    fontSize: 13,
+    color: '#666',
+  },
+  vacantBedCard: {
+    width: '47%',
+    backgroundColor: '#f0faf0',
+    borderWidth: 1,
+    borderColor: '#c8e6c9',
+    padding: 15,
+  },
+  vacantBedDetails: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    backgroundColor: 'white',
+    borderRadius: 6,
+    padding: 5,
+    width: '100%',
+  },
+  vacantBedText: {
+    fontSize: 12,
+    color: '#43A047',
+    fontWeight: '500',
   },
 });
 
