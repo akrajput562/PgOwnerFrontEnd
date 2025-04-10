@@ -1,60 +1,111 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect  } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import tw from 'twrnc';
-
+import apiClient from "../api/auth";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Rooms = ({ navigation }) => {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedFloor, setSelectedFloor] = useState(1);
   const [selectedDate, setSelectedDate] = useState('Jan 04, 2025');
   const [filterPendingDues, setFilterPendingDues] = useState(true);
-  
-  // Sample properties data
-  const properties = [
-    { id: 1, name: 'PG A', address: '123 Main St' },
-    { id: 2, name: 'PG B', address: '456 Oak Ave' },
-  ];
+  const [properties, setProperties] = useState([]);
+const [rooms, setRooms] = useState([]);
+  useEffect(() => {
+    fetchPropeties();
+    fetchRoomLayouts();
+  }, []);
+// // Sample properties data
+  // const properties = [
+  //   { id: 1, name: 'PG A', address: '123 Main St' },
+  //   { id: 2, name: 'PG B', address: '456 Oak Ave' },
+  // ];
 
-  // Sample rooms data in the new format
-  const rooms = [
-    {
-      noOfBeds: 4,
-      roomNo: "A101",
-      pgId: 1,
-      userId: 101,
-      occupy: 2,
-      availableBeds: 2,
-      floorNo: 1
-    },
-    {
-      noOfBeds: 3,
-      roomNo: "A102",
-      pgId: 1,
-      userId: 101,
-      occupy: 3,
-      availableBeds: 0,
-      floorNo: 1
-    },
-    {
-      noOfBeds: 2,
-      roomNo: "B201",
-      pgId: 2,
-      userId: 102,
-      occupy: 1,
-      availableBeds: 1,
-      floorNo: 2
-    },
-    {
-      noOfBeds: 2,
-      roomNo: "B202",
-      pgId: 2,
-      userId: 102,
-      occupy: 0,
-      availableBeds: 2,
-      floorNo: 2
+  // // Sample rooms data in the new format
+  // const rooms = [
+  //   {
+  //     noOfBeds: 4,
+  //     roomNo: "A101",
+  //     pgId: 1,
+  //     userId: 101,
+  //     occupy: 2,
+  //     availableBeds: 2,
+  //     floorNo: 1
+  //   },
+  //   {
+  //     noOfBeds: 3,
+  //     roomNo: "A102",
+  //     pgId: 1,
+  //     userId: 101,
+  //     occupy: 3,
+  //     availableBeds: 0,
+  //     floorNo: 1
+  //   },
+  //   {
+  //     noOfBeds: 2,
+  //     roomNo: "B201",
+  //     pgId: 2,
+  //     userId: 102,
+  //     occupy: 1,
+  //     availableBeds: 1,
+  //     floorNo: 2
+  //   },
+  //   {
+  //     noOfBeds: 2,
+  //     roomNo: "B202",
+  //     pgId: 2,
+  //     userId: 102,
+  //     occupy: 0,
+  //     availableBeds: 2,
+  //     floorNo: 2
+  //   }
+  // ];
+  const fetchPropeties = async ()=>{
+     const authToken = await AsyncStorage.getItem('authToken');
+    try{
+      const payload ={
+        user_id:1
+      }
+      const response = await apiClient(
+        "/pg/getPgDtlsByUserId",
+        "POST",
+        payload,
+        authToken,
+        { "Content-Type": "application/json" }
+      );
+      setProperties(response)
+    }catch (error) {
+      console.error("Error fetching room layouts:", error);
     }
-  ];
 
+  };
+  const fetchRoomLayouts = async () => {
+    const authToken = await AsyncStorage.getItem('authToken');
+    try {
+      const payload = {
+        pg_id: 4,
+        user_id: 1
+      };
+  
+      const response = await apiClient(
+        "/pg/getRoomLayoutDtls",
+        "POST",
+        payload,
+        authToken,
+        { "Content-Type": "application/json" }
+      );
+  
+      if (response.status === 200) {
+        const data = await response.json();
+        console.log("Room Layout Data:", data);
+        setRooms(data);
+      } else {
+        console.error("Failed to fetch room layouts", response);
+      }
+    } catch (error) {
+      console.error("Error fetching room layouts:", error);
+    }
+  };
   const getBedStatus = (room) => {
     if (room.occupy === 0) return 'V'; // Vacant
     if (room.occupy === room.noOfBeds) return 'O'; // Occupied
@@ -75,15 +126,15 @@ const Rooms = ({ navigation }) => {
       <Text style={tw`text-xl font-bold text-gray-800 mb-4`}>Select Property</Text>
       {properties.map((property) => (
         <TouchableOpacity
-          key={property.id}
+          key={property.pg_id}
           style={[
             tw`p-4 mb-3 rounded-lg border`,
-            selectedProperty?.id === property.id ? tw`border-indigo-500 bg-indigo-50` : tw`border-gray-200`
+            selectedProperty?.pg_id === property.pg_id ? tw`border-indigo-500 bg-indigo-50` : tw`border-gray-200`
           ]}
           onPress={() => setSelectedProperty(property)}
         >
-          <Text style={tw`text-lg font-semibold text-gray-800`}>{property.name}</Text>
-          <Text style={tw`text-gray-600 mt-1`}>{property.address}</Text>
+          <Text style={tw`text-lg font-semibold text-gray-800`}>{property.pg_name}</Text>
+          <Text style={tw`text-gray-600 mt-1`}>{property.pg_name}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -92,7 +143,7 @@ const Rooms = ({ navigation }) => {
   const renderHeader = () => (
     <View style={tw`bg-white p-4 border-b border-gray-200`}>
       <View style={tw`flex-row justify-between items-center`}>
-        <Text style={tw`text-xl font-bold text-gray-800`}>{selectedProperty?.name || 'Select Property'}</Text>
+        <Text style={tw`text-xl font-bold text-gray-800`}>{selectedProperty?.pg_name || 'Select Property'}</Text>
         <View style={tw`flex-row`}>
           <TouchableOpacity style={tw`mr-4`}>
             <Ionicons name="filter-outline" size={22} color="#4B5563" />
@@ -139,7 +190,7 @@ const Rooms = ({ navigation }) => {
   );
 
   const renderFloorTabs = () => {
-    const floors = [...new Set(rooms.map(room => room.floorNo))].sort();
+    const floors = [...new Set(rooms.map(room => room.floor_no))].sort();
     
     return (
       <View style={tw`flex-row justify-around border-b border-gray-200`}>
@@ -167,23 +218,23 @@ const Rooms = ({ navigation }) => {
   const renderRooms = () => {
     const floorRooms = rooms.filter(room => 
       room.floorNo === selectedFloor && 
-      (!selectedProperty || room.pgId === selectedProperty.id)
+      (!selectedProperty || room.pg_id === selectedProperty.pg_id)
     );
 
     return (
       <View style={tw`p-4`}>
         {floorRooms.map((room) => (
-          <View key={`${room.roomNo}-${room.pgId}`} style={tw`flex-row mb-6`}>
+          <View key={`${room.room_no}-${room.pg_id}`} style={tw`flex-row mb-6`}>
             <TouchableOpacity style={tw`w-20 h-20 bg-gray-100 rounded-lg mr-3 justify-center items-center`}>
-              <Text style={tw`font-semibold text-gray-700`}>{room.roomNo}</Text>
+              <Text style={tw`font-semibold text-gray-700`}>{room.room_no}</Text>
               <Ionicons name="chevron-forward" size={16} color="#6B7280" />
             </TouchableOpacity>
             
-            {Array.from({ length: room.noOfBeds }).map((_, index) => {
+            {Array.from({ length: room.no_of_beds }).map((_, index) => {
               const status = getBedStatus(room);
               return (
                 <TouchableOpacity 
-                  key={`${room.roomNo}-${room.pgId}-${index}`}
+                  key={`${room.room_no}-${room.pg_id}-${index}`}
                   style={[
                     tw`w-20 h-20 rounded-lg mr-3 justify-center items-center`,
                     { backgroundColor: getBedStatusBackgroundColor(status) }
