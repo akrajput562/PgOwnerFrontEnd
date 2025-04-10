@@ -4,44 +4,61 @@ import { Ionicons } from '@expo/vector-icons';
 import tw from 'twrnc';
 
 const Rooms = ({ navigation }) => {
-  const [selectedFloor, setSelectedFloor] = useState('GROUND');
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [selectedFloor, setSelectedFloor] = useState(1);
   const [selectedDate, setSelectedDate] = useState('Jan 04, 2025');
   const [filterPendingDues, setFilterPendingDues] = useState(true);
   
-  const floors = [
-    { id: 'GROUND', title: 'GROUND', rooms: [
-      { id: '001', beds: [{ status: 'P', position: 1 }, { status: 'V', position: 2 }, { status: 'V', position: 3 }] },
-      { id: '002', beds: [{ status: 'P', position: 1 }, { status: 'O', position: 2 }, { status: 'V', position: 3 }] },
-      { id: '003', beds: [{ status: 'P', position: 1 }, { status: 'V', position: 2 }, { status: 'V', position: 3 }] },
-      { id: '004', beds: [{ status: 'P', position: 1 }, { status: 'P', position: 2 }, { status: 'V', position: 3 }] },
-      { id: '005', beds: [{ status: 'P', position: 1 }, { status: 'P', position: 2 }, { status: 'V', position: 3 }] },
-    ]},
-    { id: 'FIRST', title: 'FIRST', rooms: [
-      { id: '101', beds: [{ status: 'P', position: 1 }, { status: 'V', position: 2 }, { status: 'V', position: 3 }] },
-    ]},
-    { id: 'SECOND', title: 'SECOND', rooms: [
-      { id: '201', beds: [{ status: 'P', position: 1 }, { status: 'V', position: 2 }, { status: 'V', position: 3 }] },
-      { id: '202', beds: [{ status: 'O', position: 1 }, { status: 'V', position: 2 }, { status: 'V', position: 3 }] },
-      { id: '203', beds: [{ status: 'P', position: 1 }, { status: 'P', position: 2 }, { status: 'V', position: 3 }] },
-    ]},
-    { id: 'THIRD', title: 'THIRD', rooms: [
-      { id: '301', beds: [{ status: 'P', position: 1 }, { status: 'O', position: 2 }, { status: 'V', position: 3 }] },
-      { id: '302', beds: [{ status: 'V', position: 1 }, { status: 'V', position: 2 }, { status: 'V', position: 3 }] },
-      { id: '303', beds: [{ status: 'P', position: 1 }, { status: 'P', position: 2 }, { status: 'O', position: 3 }] },
-    ]},
-    { id: 'FOURTH', title: 'FOURTH', rooms: [
-      { id: '401', beds: [{ status: 'P', position: 1 }, { status: 'V', position: 2 }, { status: 'O', position: 3 }] },
-      { id: '402', beds: [{ status: 'O', position: 1 }, { status: 'P', position: 2 }, { status: 'V', position: 3 }] },
-    ]},
+  // Sample properties data
+  const properties = [
+    { id: 1, name: 'PG A', address: '123 Main St' },
+    { id: 2, name: 'PG B', address: '456 Oak Ave' },
   ];
 
-  const getBedStatusColor = (status) => {
-    switch (status) {
-      case 'O': return '#FF2D2D'; // Red for Occupied
-      case 'V': return '#FFFFFF'; // White for Vacant
-      case 'P': return '#8A7EF6'; // Purple for Pending dues
-      default: return '#FFFFFF';
+  // Sample rooms data in the new format
+  const rooms = [
+    {
+      noOfBeds: 4,
+      roomNo: "A101",
+      pgId: 1,
+      userId: 101,
+      occupy: 2,
+      availableBeds: 2,
+      floorNo: 1
+    },
+    {
+      noOfBeds: 3,
+      roomNo: "A102",
+      pgId: 1,
+      userId: 101,
+      occupy: 3,
+      availableBeds: 0,
+      floorNo: 1
+    },
+    {
+      noOfBeds: 2,
+      roomNo: "B201",
+      pgId: 2,
+      userId: 102,
+      occupy: 1,
+      availableBeds: 1,
+      floorNo: 2
+    },
+    {
+      noOfBeds: 2,
+      roomNo: "B202",
+      pgId: 2,
+      userId: 102,
+      occupy: 0,
+      availableBeds: 2,
+      floorNo: 2
     }
+  ];
+
+  const getBedStatus = (room) => {
+    if (room.occupy === 0) return 'V'; // Vacant
+    if (room.occupy === room.noOfBeds) return 'O'; // Occupied
+    return 'P'; // Partially occupied
   };
 
   const getBedStatusBackgroundColor = (status) => {
@@ -53,10 +70,29 @@ const Rooms = ({ navigation }) => {
     }
   };
 
+  const renderPropertySelection = () => (
+    <View style={tw`flex-1 bg-white p-4`}>
+      <Text style={tw`text-xl font-bold text-gray-800 mb-4`}>Select Property</Text>
+      {properties.map((property) => (
+        <TouchableOpacity
+          key={property.id}
+          style={[
+            tw`p-4 mb-3 rounded-lg border`,
+            selectedProperty?.id === property.id ? tw`border-indigo-500 bg-indigo-50` : tw`border-gray-200`
+          ]}
+          onPress={() => setSelectedProperty(property)}
+        >
+          <Text style={tw`text-lg font-semibold text-gray-800`}>{property.name}</Text>
+          <Text style={tw`text-gray-600 mt-1`}>{property.address}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
   const renderHeader = () => (
     <View style={tw`bg-white p-4 border-b border-gray-200`}>
       <View style={tw`flex-row justify-between items-center`}>
-        <Text style={tw`text-xl font-bold text-gray-800`}>PG Sunrise Rooms</Text>
+        <Text style={tw`text-xl font-bold text-gray-800`}>{selectedProperty?.name || 'Select Property'}</Text>
         <View style={tw`flex-row`}>
           <TouchableOpacity style={tw`mr-4`}>
             <Ionicons name="filter-outline" size={22} color="#4B5563" />
@@ -102,74 +138,81 @@ const Rooms = ({ navigation }) => {
     </View>
   );
 
-  const renderFloorTabs = () => (
-    <View style={tw`flex-row justify-around border-b border-gray-200`}>
-      {floors.map((floor) => (
-        <TouchableOpacity
-          key={floor.id}
-          onPress={() => setSelectedFloor(floor.id)}
-          style={[
-            tw`py-3 px-2`,
-            selectedFloor === floor.id ? tw`border-b-2 border-indigo-600` : null
-          ]}
-        >
-          <Text style={[
-            tw`font-semibold`,
-            selectedFloor === floor.id ? tw`text-indigo-600` : tw`text-gray-600`
-          ]}>
-            {floor.title}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-
-  const renderFloorTitle = (floorTitle) => (
-    <View style={tw`p-4`}>
-      <Text style={tw`text-gray-700`}>{floorTitle.toLowerCase()} floor</Text>
-    </View>
-  );
+  const renderFloorTabs = () => {
+    const floors = [...new Set(rooms.map(room => room.floorNo))].sort();
+    
+    return (
+      <View style={tw`flex-row justify-around border-b border-gray-200`}>
+        {floors.map((floor) => (
+          <TouchableOpacity
+            key={floor}
+            onPress={() => setSelectedFloor(floor)}
+            style={[
+              tw`py-3 px-2`,
+              selectedFloor === floor ? tw`border-b-2 border-indigo-600` : null
+            ]}
+          >
+            <Text style={[
+              tw`font-semibold`,
+              selectedFloor === floor ? tw`text-indigo-600` : tw`text-gray-600`
+            ]}>
+              Floor {floor}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
+  };
 
   const renderRooms = () => {
-    const currentFloor = floors.find(f => f.id === selectedFloor);
-    if (!currentFloor) return null;
+    const floorRooms = rooms.filter(room => 
+      room.floorNo === selectedFloor && 
+      (!selectedProperty || room.pgId === selectedProperty.id)
+    );
 
     return (
       <View style={tw`p-4`}>
-        {currentFloor.rooms.map((room) => (
-          <View key={room.id} style={tw`flex-row mb-6`}>
+        {floorRooms.map((room) => (
+          <View key={`${room.roomNo}-${room.pgId}`} style={tw`flex-row mb-6`}>
             <TouchableOpacity style={tw`w-20 h-20 bg-gray-100 rounded-lg mr-3 justify-center items-center`}>
-              <Text style={tw`font-semibold text-gray-700`}>{room.id}</Text>
+              <Text style={tw`font-semibold text-gray-700`}>{room.roomNo}</Text>
               <Ionicons name="chevron-forward" size={16} color="#6B7280" />
             </TouchableOpacity>
             
-            {room.beds.map((bed, index) => (
-              <TouchableOpacity 
-                key={index}
-                style={[
-                  tw`w-20 h-20 rounded-lg mr-3 justify-center items-center`,
-                  { backgroundColor: getBedStatusBackgroundColor(bed.status) }
-                ]}
-              >
-                {bed.status === 'P' && (
-                  <View style={tw`items-center justify-center`}>
-                    <Ionicons name="hourglass-outline" size={24} color="#8A7EF6" />
-                  </View>
-                )}
-                {bed.status === 'O' && (
-                  <View style={tw`items-center justify-center`}>
-                    <View style={styles.checkmark}>
-                      <Ionicons name="checkmark" size={24} color="#fff" />
+            {Array.from({ length: room.noOfBeds }).map((_, index) => {
+              const status = getBedStatus(room);
+              return (
+                <TouchableOpacity 
+                  key={`${room.roomNo}-${room.pgId}-${index}`}
+                  style={[
+                    tw`w-20 h-20 rounded-lg mr-3 justify-center items-center`,
+                    { backgroundColor: getBedStatusBackgroundColor(status) }
+                  ]}
+                >
+                  {status === 'P' && (
+                    <View style={tw`items-center justify-center`}>
+                      <Ionicons name="hourglass-outline" size={24} color="#8A7EF6" />
                     </View>
-                  </View>
-                )}
-              </TouchableOpacity>
-            ))}
+                  )}
+                  {status === 'O' && (
+                    <View style={tw`items-center justify-center`}>
+                      <View style={styles.checkmark}>
+                        <Ionicons name="checkmark" size={24} color="#fff" />
+                      </View>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
           </View>
         ))}
       </View>
     );
   };
+
+  if (!selectedProperty) {
+    return renderPropertySelection();
+  }
 
   return (
     <View style={tw`flex-1 bg-white`}>
@@ -177,7 +220,6 @@ const Rooms = ({ navigation }) => {
       {renderFilters()}
       {renderFloorTabs()}
       <ScrollView showsVerticalScrollIndicator={false}>
-        {renderFloorTitle(selectedFloor)}
         {renderRooms()}
       </ScrollView>
     </View>
