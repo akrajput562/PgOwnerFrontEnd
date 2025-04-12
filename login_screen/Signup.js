@@ -29,6 +29,8 @@ const Signup = ({ navigation }) => {
     
             // Create FormData for the API request
             const formData = new FormData();
+            formData.append("status",1);
+            formData.append("role_id",1);
             Object.keys(credentials).forEach(key => {
                 formData.append(key, credentials[key]);
             });
