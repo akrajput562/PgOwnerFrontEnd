@@ -14,8 +14,8 @@ import RegularButton from "../components/Buttons/RegularButton";
 import PressableText from "../components/Texts/PressableText";
 import RowContainer from "../components/Containers/RowContainer";
 import apiClient from "../api/auth";
-import jwtDecode from "jwt-decode";
-
+import {JwtDecode} from '../api/JwtDecode'
+import { decodeJWT } from '../api/JwtDecode';
 const Login = ({navigation}) =>{
     const [message, setMessage] = useState('');
     const [isSuccessMessage, setIsSuccessMessage] = useState(false);
@@ -24,7 +24,9 @@ const Login = ({navigation}) =>{
         navigation.navigate(screen, { ...payload});
     };
     
-    
+
+
+
 
     const handleLogin = async (credentials, setSubmitting) => {
         try {
@@ -41,7 +43,11 @@ const Login = ({navigation}) =>{
             if (token) {
                 // Store token in AsyncStorage
                 await AsyncStorage.setItem('authToken', token);
-            //    await AsyncStorage.setItem('userID', userId);
+                const jwtToken =token;
+                const decodedPayload = decodeJWT(jwtToken);
+                console.log(decodedPayload);
+                 await AsyncStorage.setItem('userID',decodedPayload.user_id); 
+                 await AsyncStorage.setItem('role_id',decodedPayload.roles[0]); 
                 moveTo('Dashboard');
                 console.log('Sign in successful:', data);
             } else {
