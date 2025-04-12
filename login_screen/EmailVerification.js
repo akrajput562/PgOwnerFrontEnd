@@ -3,7 +3,7 @@ import { ActivityIndicator } from "react-native";
 import { colors } from "../components/colors";
 const { primary, secondary, lightGray } = colors;
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// Custom components
+import axios from 'axios';
 import MainContainer from "../components/Containers/MainContainer";
 import KeyboardAvoidingContainer from "../components/Containers/KeyboardAvoidingContainer";
 import RegularText from "../components/Texts/RegularText";
@@ -91,24 +91,31 @@ const EmailVerification = ({ navigation, route }) => {
             alert('Email Resend Failed: ' + error.message);
         }
     };
-
+    const API_BASE_URL = 'http://localhost:8080/pg';
     const handleEmailVerification = async () => {
         try {
             setVerifying(true);
             const formData = new FormData();
             Object.keys(user).forEach(key => {
                 formData.append(key, user[key]); // Add user details
+        
             });
             formData.append("otp", code); // Add OTP separately
-            formData.append("status",1);
-            formData.append("role_id",1)
-            formData.append("user_id",userId)
+  
+          
             console.log(formData)
 
             // Send request
-            const data = await apiClient('/pg/verifyOtp', 'POST', formData);
+            const data = await axios({
+                method: 'POST',
+                url: `${API_BASE_URL}/pg/verifyOtp?otp=${code}`, // Since backend expects otp as query param
+                data: user, // Use plain object, not FormData
+                headers: {
+                    'Content-Type': 'application/json', // Backend expects JSON
+                },
+            });
 
-            if (data.status === "1") {
+            if (data.status === 200) {
                 setVerifying(true);
                 return showModal('success', 'All Good!', 'Your email has been verified.', 'Proceed');
                 moveTo('Dashboard');
