@@ -91,7 +91,8 @@ const EmailVerification = ({ navigation, route }) => {
             alert('Email Resend Failed: ' + error.message);
         }
     };
-    const API_BASE_URL = 'http://localhost:8080/pg';
+    //const API_BASE_URL = 'http://localhost:8080/pg';
+    const API_BASE_URL='http://192.168.29.155:8080/pg'
     const handleEmailVerification = async () => {
         try {
             setVerifying(true);

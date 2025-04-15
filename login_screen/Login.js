@@ -46,8 +46,8 @@ const Login = ({navigation}) =>{
                 const jwtToken =token;
                 const decodedPayload = decodeJWT(jwtToken);
                 console.log(decodedPayload);
-                 await AsyncStorage.setItem('userID',decodedPayload.user_id); 
-                 await AsyncStorage.setItem('role_id',decodedPayload.roles[0]); 
+               //  await AsyncStorage.setItem('userID',decodedPayload.user_id); 
+               //  await AsyncStorage.setItem('role_id',decodedPayload.roles[0]); 
                 moveTo('Dashboard');
                 console.log('Sign in successful:', data);
             } else {
