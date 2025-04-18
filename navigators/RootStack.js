@@ -1,6 +1,8 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Platform } from 'react-native';
 
 import { colors } from "../components/colors";
 const { accent, secondary } = colors;
@@ -29,126 +31,134 @@ const Stack = createStackNavigator();
 
 const RootStack = () => {
     return (
-        <NavigationContainer>
-            <Stack.Navigator
-                screenOptions={{
-                    headerTintColor: accent,
-                    headerStyle: {
-                        height: 100,
-                        backgroundColor: secondary,
-                        borderBottomWidth: 0,
-                        shadowColor: 'transparent',
-                        shadowOpacity: 0,
-                        elevation: 0
-                    },
-                    headerLeftContainerStyle: {
-                        paddingLeft: 10
-                    },
-                    headerRightContainerStyle: {
-                        paddingRight: 25
-                    },
-                }}
-                initialRouteName="Login"
-            >
-                <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-                <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
-                <Stack.Screen
-                    name="EmailVerification"
-                    component={EmailVerification}
-                    options={{ headerTitle: 'Email Verification' }}
-                />
-                <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerTitle: 'Forgot Password' }} />
-                <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ headerTitle: 'Reset Password' }} />
-                <Stack.Screen
-                    name="Dashboard"
-                    component={Dashboard}
-                    options={{
-                        headerShown: false,
-                        gestureEnabled: false
-                    }}
-                />
-                <Stack.Screen
-                    name="PgRegistration"
-                    component={PgRegistration}
-                    options={{
-                        title: 'PG Registration',
+        <SafeAreaProvider>
+            <NavigationContainer>
+                <Stack.Navigator
+                    screenOptions={{
+                        headerTintColor: accent,
                         headerStyle: {
-                            backgroundColor: '#ffffff',
-                            elevation: 0,
-                            shadowOpacity: 0
+                            height: Platform.OS === 'ios' ? 110 : 100,
+                            backgroundColor: secondary,
+                            borderBottomWidth: 0,
+                            shadowColor: 'transparent',
+                            shadowOpacity: 0,
+                            elevation: 0
                         },
-                        headerTintColor: '#000000',
-                        headerTitleStyle: {
-                            fontWeight: 'bold'
-                        }
-                    }}
-                />
-                <Stack.Screen name="SuccessMessage" component={SuccessMessage} options={{ headerShown: false }} />
-                <Stack.Screen name="Property" component={PropertyNavigation} options={{ headerShown: false }} />
-                <Stack.Screen name="AddTenant" component={AddTenant} options={{ title: 'Add Tenant' }} />
-                <Stack.Screen
-                    name="Rooms"
-                    component={Rooms}
-                    options={{
-                        title: 'Rooms',
-                        headerStyle: {
-                            backgroundColor: '#ffffff',
-                            elevation: 0,
-                            shadowOpacity: 0
+                        headerLeftContainerStyle: {
+                            paddingLeft: 10,
+                            marginTop: Platform.OS === 'ios' ? 10 : 0
                         },
-                        headerTintColor: '#000000',
-                        headerTitleStyle: {
-                            fontWeight: 'bold'
-                        }
-                    }}
-                />
-                <Stack.Screen
-                    name="RoomDetails"
-                    component={RoomDetails}
-                    options={{
-                        title: 'Room Details',
-                        headerStyle: {
-                            backgroundColor: '#ffffff',
-                            elevation: 0,
-                            shadowOpacity: 0
+                        headerRightContainerStyle: {
+                            paddingRight: 25,
+                            marginTop: Platform.OS === 'ios' ? 10 : 0
                         },
-                        headerTintColor: '#000000',
-                        headerTitleStyle: {
-                            fontWeight: 'bold'
-                        }
+                        headerTitleContainerStyle: {
+                            marginTop: Platform.OS === 'ios' ? 10 : 0
+                        },
+                        safeAreaInsets: { top: Platform.OS === 'ios' ? 50 : 0 }
                     }}
-                />
-                {/* Reports Screen */}
-                <Stack.Screen
-                    name="Reports"
-                    component={Reports}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                {/* New PgListScreen added to navigation */}
-                <Stack.Screen name="PgListScreen" component={PgListScreen} options={{ title: 'PG List' }} />
-                {/* Profile Screen */}
-                <Stack.Screen 
-                    name="ProfileScreen" 
-                    component={ProfileScreen} 
-                    options={{ headerShown: false }}
-                />
-                {/* Edit Profile Screen */}
-               
-                {/* Beds Availability Screen */}
-                <Stack.Screen 
-                    name="BedsAvailability" 
-                    component={BedsAvailability} 
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="TenantRequests"
-                    component={TenantRequests}
-                    options={{ headerShown: false }}
-                />
-            </Stack.Navigator>
-        </NavigationContainer>
+                    initialRouteName="Login"
+                >
+                    <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+                    <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
+                    <Stack.Screen
+                        name="EmailVerification"
+                        component={EmailVerification}
+                        options={{ headerTitle: 'Email Verification' }}
+                    />
+                    <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerTitle: 'Forgot Password' }} />
+                    <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ headerTitle: 'Reset Password' }} />
+                    <Stack.Screen
+                        name="Dashboard"
+                        component={Dashboard}
+                        options={{
+                            headerShown: false,
+                            gestureEnabled: false
+                        }}
+                    />
+                    <Stack.Screen
+                        name="PgRegistration"
+                        component={PgRegistration}
+                        options={{
+                            title: 'PG Registration',
+                            headerStyle: {
+                                backgroundColor: '#ffffff',
+                                elevation: 0,
+                                shadowOpacity: 0
+                            },
+                            headerTintColor: '#000000',
+                            headerTitleStyle: {
+                                fontWeight: 'bold'
+                            }
+                        }}
+                    />
+                    <Stack.Screen name="SuccessMessage" component={SuccessMessage} options={{ headerShown: false }} />
+                    <Stack.Screen name="Property" component={PropertyNavigation} options={{ headerShown: false }} />
+                    <Stack.Screen name="AddTenant" component={AddTenant} options={{ title: 'Add Tenant' }} />
+                    <Stack.Screen
+                        name="Rooms"
+                        component={Rooms}
+                        options={{
+                            title: 'Rooms',
+                            headerStyle: {
+                                backgroundColor: '#ffffff',
+                                elevation: 0,
+                                shadowOpacity: 0
+                            },
+                            headerTintColor: '#000000',
+                            headerTitleStyle: {
+                                fontWeight: 'bold'
+                            }
+                        }}
+                    />
+                    <Stack.Screen
+                        name="RoomDetails"
+                        component={RoomDetails}
+                        options={{
+                            title: 'Room Details',
+                            headerStyle: {
+                                backgroundColor: '#ffffff',
+                                elevation: 0,
+                                shadowOpacity: 0
+                            },
+                            headerTintColor: '#000000',
+                            headerTitleStyle: {
+                                fontWeight: 'bold'
+                            }
+                        }}
+                    />
+                    {/* Reports Screen */}
+                    <Stack.Screen
+                        name="Reports"
+                        component={Reports}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    {/* New PgListScreen added to navigation */}
+                    <Stack.Screen name="PgListScreen" component={PgListScreen} options={{ title: 'PG List' }} />
+                    {/* Profile Screen */}
+                    <Stack.Screen 
+                        name="ProfileScreen" 
+                        component={ProfileScreen} 
+                        options={{ headerShown: false }}
+                    />
+                    {/* Edit Profile Screen */}
+                   
+                    {/* Beds Availability Screen */}
+                    <Stack.Screen 
+                        name="BedsAvailability" 
+                        component={BedsAvailability} 
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="TenantRequests"
+                        component={TenantRequests}
+                        options={{ headerShown: false }}
+                    />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </SafeAreaProvider>
     );
 };
 
