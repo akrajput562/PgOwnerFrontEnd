@@ -46,7 +46,7 @@
   "devDependencies": {
     "@babel/core": "^7.26.10",
     "@react-native-community/cli": "latest",
-    "expo": "~52.0.46",
+    "expo": "^52.0.46",
     "typescript": "^5.3.3"
   },
   "private": true
