@@ -1,21 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import tw from 'twrnc';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiClient from '../api/auth';
 
 const Rooms = ({ navigation }) => {
   const [selectedProperty, setSelectedProperty] = useState(null);
-  const [properties] = useState([
-    { pg_id: 1, pg_name: 'Test PG 1', address: '123 Main St' },
-    { pg_id: 2, pg_name: 'Test PG 2', address: '456 Park Ave' }
-  ]);
-  const [rooms] = useState([
-    { noOfBeds: 2, roomNo: '101', pgId: 1, userId: 1, occupy: 1, availableBeds: 1, floorNo: '1' },
-    { noOfBeds: 3, roomNo: '102', pgId: 1, userId: 1, occupy: 2, availableBeds: 1, floorNo: '1' },
-    { noOfBeds: 2, roomNo: '201', pgId: 1, userId: 1, occupy: 0, availableBeds: 2, floorNo: '2' },
-    { noOfBeds: 4, roomNo: 'G01', pgId: 1, userId: 1, occupy: 3, availableBeds: 1, floorNo: '0' },
-    { noOfBeds: 3, roomNo: 'G02', pgId: 1, userId: 1, occupy: 0, availableBeds: 3, floorNo: '0' }
-  ]);
+  const [rooms,setRooms] = useState([]);
+  const[properties, setProperties] = useState([]);
+  useEffect(()=>{
+    fetchProperties();
+  },[]);
+  const [selectedFloor,setSelectedFloor] = useState(1);
+  // const [properties] = useState([
+  //   { pg_id: 1, pg_name: 'Test PG 1', address: '123 Main St' },
+  //   { pg_id: 2, pg_name: 'Test PG 2', address: '456 Park Ave' }
+  // ]);
+  // const [rooms] = useState([
+  //   { noOfBeds: 2, roomNo: '101', pgId: 1, userId: 1, occupy: 1, availableBeds: 1, floorNo: '1' },
+  //   { noOfBeds: 3, roomNo: '102', pgId: 1, userId: 1, occupy: 2, availableBeds: 1, floorNo: '1' },
+  //   { noOfBeds: 2, roomNo: '201', pgId: 1, userId: 1, occupy: 0, availableBeds: 2, floorNo: '2' },
+  //   { noOfBeds: 4, roomNo: 'G01', pgId: 1, userId: 1, occupy: 3, availableBeds: 1, floorNo: '0' },
+  //   { noOfBeds: 3, roomNo: 'G02', pgId: 1, userId: 1, occupy: 0, availableBeds: 3, floorNo: '0' }
+  // ]);
 
   const getBedStatus = (room) => {
     if (room.occupy === 0) return 'V';
@@ -41,7 +49,60 @@ const Rooms = ({ navigation }) => {
       default: return `Floor ${floorNo}`;
     }
   };
+const fetchProperties = async ()=>{
+  const authToken  = await AsyncStorage.getItem('authToken');
+  try{
+    const response = await apiClient(
+      "/pg/getPgDtlsByUserId",
+      "POST",
+      {user_id:1},
+      authToken,
+      {
+        "Content-Type":"application/json"
+      }
+    );
+    if(Array.isArray(response)){
+      setProperties (response);
+    }else{
+      console.log("Expected array, got:",response)
+    }
+  }catch (error){
+    console.log("Error fetching properites",error)
+  }
+}
+const fetchRoomLayouts = async(pgId)=>{
+  const authToken  = await AsyncStorage.getItem('authToken');
+  try{
+    const response = await apiClient(
+      "/pg/getRoomLayoutDtls",
+      "POST",
+      {pg_id:pgId, user_id:1},
+      authToken,
+      {"Content-Type":"application/json"}
+    );
+    if(Array.isArray(response)){
+      const data = response;
+      const parsedRoom = data.map(room =>({
+        noOfBeds:parseInt(room.no_of_beds,10),
+        roomNo:room.room_no,
+        pgId:parseInt(room.pg_id,10),
+        userId:parseInt(room.user_id,10),
+        occupy:parseInt(room.occupy,10),
+        availableBeds:parseInt(room.availableBeds??(room.no_of_beds-room.occupy),10),
+        floorNo:room.floor_no
+      }));
 
+      setRooms(parsedRoom);
+      if(parsedRoom.length > 0){
+        setSelectedFloor(parsedRoom[0].floorNo);
+      }
+    }else{
+      console.log("Failed to fetch Room Layout");
+    }
+  }catch (error){
+    console.error("Error fetching the room Layour",error);
+  }
+}
   const renderPropertySelection = () => (
     <View style={tw`flex-1 bg-white p-4`}>
       <View style={tw`mb-6`}>
@@ -55,8 +116,11 @@ const Rooms = ({ navigation }) => {
             tw`p-4 mb-3 rounded-lg border`,
             selectedProperty?.pg_id === property.pg_id ? tw`border-indigo-500 bg-indigo-50` : tw`border-gray-200`
           ]}
-          onPress={() => setSelectedProperty(property)}
-        >
+          onPress={() =>{ 
+            setSelectedProperty(property)
+            fetchRoomLayouts(property.pg_id);
+          }
+          }>
           <Text style={tw`text-lg font-semibold text-gray-800`}>{property.pg_name}</Text>
           <Text style={tw`text-gray-600 mt-1`}>{property.address}</Text>
         </TouchableOpacity>
