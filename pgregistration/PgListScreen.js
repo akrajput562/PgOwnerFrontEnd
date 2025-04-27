@@ -1,32 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiClient from '../api/auth';
 const PgListScreen = () => {
   const navigation = useNavigation();
   const [pgList, setPgList] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Simulate fetching PG properties from an API (replace this with your API call)
-  useEffect(() => {
-    // TODO: Replace the following dummy data with an API call to fetch PG properties
-    setTimeout(() => {
-      const data = [
-        { id: '1', name: 'PG Property 1', address: 'Address 1' },
-        { id: '2', name: 'PG Property 2', address: 'Address 2' },
-        { id: '3', name: 'PG Property 3', address: 'Address 3' },
-      ];
-      setPgList(data);
-      setLoading(false);
-    }, 2000);
-  }, []);
+  // useEffect(() => {
+  //   // TODO: Replace the following dummy data with an API call to fetch PG properties
+  //   setTimeout(() => {
+  //     const data = [
+  //       { pg_id: '1', pg_name: 'PG Property 1', address: 'Address 1' },
+  //       { pg_id: '2', pg_name: 'PG Property 2', address: 'Address 2' },
+  //       { pg_id: '3', pg_name: 'PG Property 3', address: 'Address 3' },
+  //     ];
+  //     setPgList(data);
+  //     setLoading(false);
+  //   }, 2000);
+  // }, []);
 
+    useEffect(()=>{
+      fetchProperties();
+      setLoading(false);
+    },[]);
+
+    const fetchProperties = async ()=>{
+      const authToken  = await AsyncStorage.getItem('authToken');
+      try{
+        const response = await apiClient(
+          "/pg/getPgDtlsByUserId",
+          "POST",
+          {user_id:1},
+          authToken,
+          {
+            "Content-Type":"application/json"
+          }
+        );
+        if(Array.isArray(response)){
+          setPgList (response);
+        }else{
+          console.log("Expected array, got:",response)
+        }
+      }catch (error){
+        console.log("Error fetching properites",error)
+      }
+    }
   const renderItem = ({ item }) => (
     <TouchableOpacity 
       style={styles.pgCard} 
-      onPress={() => navigation.navigate('RoomSection', { pgId: item.id })} // Adjust screen name as needed
+      onPress={() => navigation.navigate('RoomSection', { pgId: item.pg_id })} // Adjust screen name as needed
     >
-      <Text style={styles.pgName}>{item.name}</Text>
+      <Text style={styles.pgName}>{item.pg_name}</Text>
       <Text style={styles.pgAddress}>{item.address}</Text>
     </TouchableOpacity>
   );
@@ -44,7 +71,7 @@ const PgListScreen = () => {
       <Text style={styles.title}>Select a PG Property</Text>
       <FlatList
         data={pgList}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.pg_id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContainer}
       />
