@@ -92,7 +92,7 @@ const EmailVerification = ({ navigation, route }) => {
         }
     };
     //const API_BASE_URL = 'http://localhost:8080/pg';
-    const API_BASE_URL='http://192.168.29.155:8080/pg'
+    const API_BASE_URL='http://192.168.29.66:8080/pg'
     const handleEmailVerification = async () => {
         try {
             setVerifying(true);

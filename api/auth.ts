@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // Define backend base URL
 //const API_BASE_URL = 'http://localhost:8080/pg';
-const API_BASE_URL='http://192.168.29.155:8080/pg'
+const API_BASE_URL='http://192.168.29.66:8080/pg'
 export const apiClient = async (
     endpoint: string,
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
