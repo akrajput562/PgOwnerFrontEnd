@@ -11,10 +11,10 @@ const Dashboard = ({ navigation }) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity>
-          <Ionicons name="home" size={24} color="white" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Dashboard</Text>
+        <View style={styles.logoContainer}>
+          <MaterialCommunityIcons name="home-account" size={32} color="#0089fa" />
+          <Text style={styles.appName}>PG Owner</Text>
+        </View>
         <View style={styles.userInfo}>
           <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
             <Ionicons name="person-circle" size={28} color="white" />
@@ -248,6 +248,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#2196F3',
     padding: 16,
     paddingTop: StatusBar.currentHeight + 16,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  appName: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
   },
   userInfo: {
     flexDirection: 'row',

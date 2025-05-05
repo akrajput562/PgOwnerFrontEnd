@@ -1,28 +1,32 @@
 {
   "expo": {
-    "name": "pg_management",
-    "slug": "pg_management",
+    "name": "PgOk",
+    "slug": "pgok",
+    "description": "Easy Tenant Management",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/pgok-logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/pgok-logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/pgok-logo.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/pgok-logo.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/pgok-logo.png",
+      "name": "PgOk",
+      "description": "Easy Tenant Management"
     }
   }
 }

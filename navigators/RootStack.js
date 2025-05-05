@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Platform } from 'react-native';
 
 import { colors } from "../components/colors";
+import CustomHeader from "../components/CustomHeader";
 const { accent, secondary } = colors;
 
 //screen
@@ -35,44 +36,53 @@ const RootStack = () => {
             <NavigationContainer>
                 <Stack.Navigator
                     screenOptions={{
-                        headerTintColor: accent,
+                        headerTintColor: '#fff',
                         headerStyle: {
                             height: Platform.OS === 'ios' ? 110 : 100,
-                            backgroundColor: secondary,
+                            backgroundColor: '#2196F3',
                             borderBottomWidth: 0,
                             shadowColor: 'transparent',
                             shadowOpacity: 0,
                             elevation: 0
                         },
+                        headerTitle: () => <CustomHeader />,
+                        headerTitleStyle: {
+                            flex: 1,
+                            textAlign: 'center',
+                            color: '#fff'
+                        },
+                        headerLeft: () => null,
+                        headerRight: () => null,
+                        headerShown: true,
+                        headerTransparent: false,
                         headerLeftContainerStyle: {
-                            paddingLeft: 10,
-                            marginTop: Platform.OS === 'ios' ? 10 : 0
+                            paddingLeft: 0,
+                            marginTop: 0
                         },
                         headerRightContainerStyle: {
-                            paddingRight: 25,
-                            marginTop: Platform.OS === 'ios' ? 10 : 0
+                            paddingRight: 0,
+                            marginTop: 0
                         },
                         headerTitleContainerStyle: {
-                            marginTop: Platform.OS === 'ios' ? 10 : 0
-                        },
-                        safeAreaInsets: { top: Platform.OS === 'ios' ? 50 : 0 }
+                            flex: 1,
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }
                     }}
                     initialRouteName="Login"
                 >
-                    <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-                    <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
+                    <Stack.Screen name="Login" component={Login} />
+                    <Stack.Screen name="Signup" component={Signup} />
                     <Stack.Screen
                         name="EmailVerification"
                         component={EmailVerification}
-                        options={{ headerTitle: 'Email Verification' }}
                     />
-                    <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerTitle: 'Forgot Password' }} />
-                    <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ headerTitle: 'Reset Password' }} />
+                    <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+                    <Stack.Screen name="ResetPassword" component={ResetPassword} />
                     <Stack.Screen
                         name="Dashboard"
                         component={Dashboard}
                         options={{
-                            headerShown: false,
                             gestureEnabled: false
                         }}
                     />
