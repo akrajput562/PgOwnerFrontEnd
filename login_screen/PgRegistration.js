@@ -16,6 +16,7 @@ const PgRegistration = () => {
     city: '',
     state: '',
     property_type: '',
+    user_id:''
   
   });
   const [tenantDetails, setTenantDetails] = React.useState({
@@ -127,6 +128,7 @@ const PgRegistration = () => {
 
         // Construct final payload
         const payload = {
+
             pg_name: propertyDetails.pg_name,
             pg_address: propertyDetails.pg_address,
             pin_code: propertyDetails.pin_code,
@@ -135,7 +137,8 @@ const PgRegistration = () => {
             property_type: propertyDetails.property_type,
             who_can_stay: who_can_stay.join(","), // Convert array to comma-separated string
             available_for: available_for.join(","), // Convert array to comma-separated string
-            floors: formattedFloors
+            floors: formattedFloors,
+            user_id:5
         };
 
         console.log("Sending Payload:", JSON.stringify(payload));
